@@ -5,8 +5,6 @@ const userSchema = new mongoose.Schema(
   {
     profilePic: {
       type: String,
-      default:
-        "https://i.pinimg.com/736x/f6/bc/9a/f6bc9a75409c4db0acf3683bab1fab9c.jpg",
     },
     displayName: {
       type: String,

@@ -35,7 +35,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
       setState(() {
-        profilePic = responseBody['profilePic'];
+        if (responseBody['profilePic'] == null) {
+          profilePic = null;
+          return;
+        }
+        profilePic = '$serverURL/api/${responseBody['profilePic']}';
       });
     } else {
       final responseBody = jsonDecode(response.body);

@@ -61,7 +61,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> uploadImage(File image, String? cookie) async {
-    final url = Uri.parse('http://10.0.2.2:5000/api/user/updatePFP');
+    final url = Uri.parse('$serverURL/api/user/updatePFP');
 
     var request = http.MultipartRequest('POST', url);
 
@@ -92,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
     String? sessionCookie = prefs.getString('session_cookie');
 
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:5000/api/user/getUser'),
+      Uri.parse('$serverURL/api/user/getUser'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Cookie': sessionCookie!,
@@ -102,7 +102,11 @@ class _ProfilePageState extends State<ProfilePage> {
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
       setState(() {
-        profilePic = responseBody['profilePic'];
+        if (responseBody['profilePic'] == null) {
+          profilePic = null;
+          return;
+        }
+        profilePic = '$serverURL/api/${responseBody['profilePic']}';
         _usernameController.text = responseBody['displayName'];
       });
     } else {
@@ -170,7 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20.0),
-                child: profilePic == null
+                child: profilePic == null && !selectedFromGallery
                     ? Image.network(
                         "https://i.pinimg.com/736x/f6/bc/9a/f6bc9a75409c4db0acf3683bab1fab9c.jpg",
                         height: 160,

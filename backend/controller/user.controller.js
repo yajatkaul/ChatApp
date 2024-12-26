@@ -25,9 +25,7 @@ export const getUser = async (req, res) => {
 
 export const updatePFP = async (req, res) => {
   try {
-    const filePath = req.file
-      ? `${process.env.URL}/uploads/${req.file.filename}`
-      : null;
+    const filePath = req.file ? `uploads/${req.file.filename}` : null;
     await User.findByIdAndUpdate(req.session.userId, {
       profilePic: filePath,
     });
