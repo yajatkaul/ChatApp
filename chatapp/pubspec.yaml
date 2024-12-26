@@ -1,0 +1,27 @@
+name: chatapp
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+  delightful_toast: ^1.1.0
+  image_picker: ^1.1.2
+  mime: ^1.0.0
+  http_parser: ^4.0.0
+  google_nav_bar: ^5.0.7
+  line_icons: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
