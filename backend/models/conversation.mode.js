@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 //Schema
-const userDMSchema = new mongoose.Schema(
+const conversationSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -11,14 +11,18 @@ const userDMSchema = new mongoose.Schema(
     userDMs: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Conversation",
-        default: [],
+        ref: "User",
+        required: true,
       },
     ],
+    type: {
+      type: String,
+      enum: ["DM", "GC"],
+    },
   },
   { timestamps: true }
 );
 
-const UserDm = mongoose.model("UserDm", userDMSchema);
+const Conversation = mongoose.model("Conversation", conversationSchema);
 
-export default UserDm;
+export default Conversation;

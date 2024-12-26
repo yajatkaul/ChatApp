@@ -4,14 +4,14 @@ import bcrypt from "bcrypt";
 //CREATING AN ACCOUNT FROM HERE
 export const signup = async (req, res) => {
   try {
-    const { displayName, password, confirmPassword } = req.body;
-    console.log(req.body);
+    const { userName, displayName, password, confirmPassword } = req.body;
     //Salting and hashing the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     //Function to check if all the details are inputted correctly
     const result = await signupChecks({
+      userName,
       displayName,
       password,
       confirmPassword,
@@ -23,6 +23,7 @@ export const signup = async (req, res) => {
     }
 
     const newUser = new User({
+      userName,
       displayName,
       password: hashedPassword,
     });
@@ -39,7 +40,12 @@ export const signup = async (req, res) => {
 };
 
 //Function to check the details if they are correct or not
-async function signupChecks({ displayName, password, confirmPassword }) {
+async function signupChecks({
+  userName,
+  displayName,
+  password,
+  confirmPassword,
+}) {
   const nameCheck = await User.findOne({ displayName });
 
   if (nameCheck) {
@@ -50,8 +56,8 @@ async function signupChecks({ displayName, password, confirmPassword }) {
     return { error: "Please fill all fields" };
   }
 
-  if (displayName.length < 5) {
-    return { error: "Names should be greater than 4 letters" };
+  if (displayName.length < 2 || userName.length < 2) {
+    return { error: "Names should be greater than 2 letters" };
   }
 
   if (password.length < 5) {

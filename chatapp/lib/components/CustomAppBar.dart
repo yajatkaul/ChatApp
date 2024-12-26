@@ -71,16 +71,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
               ),
             ))
       ],
-      leading: Builder(
-        builder: (context) {
-          return IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          );
-        },
-      ),
     );
   }
 }

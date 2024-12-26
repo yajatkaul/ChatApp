@@ -1,6 +1,7 @@
-import 'package:chatapp/pages/navBar/chat.dart';
+import 'package:chatapp/pages/navBar/chat/chat.dart';
 import 'package:chatapp/pages/navBar/home.dart';
 import 'package:chatapp/pages/navBar/profile.dart';
+import 'package:chatapp/pages/navBar/search.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
@@ -13,9 +14,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Widget> pages = [const Home(), const Chat(), const Profile()];
+  List<Widget> pages = [
+    const Home(),
+    const Search(),
+    const Chat(),
+    const Profile()
+  ];
 
   int _currentPage = 0;
+  final PageController _pageController = PageController();
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +39,7 @@ class _HomePageState extends State<HomePage> {
             _currentPage = index;
           });
         },
+        controller: _pageController,
         children: pages,
       ),
       bottomNavigationBar: GNav(
@@ -33,6 +47,9 @@ class _HomePageState extends State<HomePage> {
           onTabChange: (index) {
             setState(() {
               _currentPage = index;
+              _pageController.animateToPage(_currentPage,
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.linear);
             });
           },
           selectedIndex: _currentPage,
@@ -40,6 +57,10 @@ class _HomePageState extends State<HomePage> {
             GButton(
               icon: LineIcons.home,
               text: 'Home',
+            ),
+            GButton(
+              icon: LineIcons.search,
+              text: 'Search',
             ),
             GButton(
               icon: LineIcons.facebookMessenger,
