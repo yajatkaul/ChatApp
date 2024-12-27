@@ -3,12 +3,13 @@ import mongoose from "mongoose";
 //Schema
 const conversationSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+    name: {
+      type: String,
     },
-    userDMs: [
+    image: {
+      type: String,
+    },
+    members: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -18,6 +19,7 @@ const conversationSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: ["DM", "GC"],
+      required: true,
     },
   },
   { timestamps: true }
