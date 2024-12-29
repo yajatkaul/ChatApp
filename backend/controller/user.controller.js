@@ -35,3 +35,7 @@ export const updatePFP = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getId = async (req, res) => {
+  return res.status(200).json(req.session.userId);
+};

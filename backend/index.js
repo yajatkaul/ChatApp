@@ -9,7 +9,7 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { app } from "./socket/socket.js";
+import { app, server } from "./socket/socket.js";
 
 configDotenv();
 
@@ -41,7 +41,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 app.use("/api/uploads", express.static(path.join(__dirname, "./uploads")));
 
-app.listen(process.env.PORT || 4000, "0.0.0.0", () => {
+server.listen(process.env.PORT || 5000, "0.0.0.0", () => {
   connectToMongoDB();
   console.log(`Server running on http://localhost:${process.env.PORT}`);
 });

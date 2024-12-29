@@ -1,6 +1,7 @@
 import Conversation from "../models/conversation.mode.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
+import { io, userSocketMap } from "../socket/socket.js";
 
 export const getUsersForNewMessage = async (req, res) => {
   try {
@@ -50,10 +51,15 @@ export const sendMessage = async (req, res) => {
 
     const conversation = await Conversation.findById(conversationId);
 
-    const newMessage = new Message({ conversationId, message });
+    const newMessage = new Message({
+      conversationId,
+      userId: req.session.userId,
+      message,
+    });
 
     await newMessage.save();
 
+    const populatedMessage = await newMessage.populate("userId");
     const memberIds = conversation.members;
     memberIds.forEach((memberId) => {
       const memberSocketId = userSocketMap[memberId.toString()];

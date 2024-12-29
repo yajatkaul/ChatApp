@@ -8,6 +8,11 @@ const messageSchema = new mongoose.Schema(
       ref: "Conversation",
       required: true,
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     message: {
       type: String,
       required: true,

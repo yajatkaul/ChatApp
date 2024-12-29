@@ -1,6 +1,7 @@
 import express from "express";
 import {
   changeUsername,
+  getId,
   getUser,
   updatePFP,
 } from "../controller/user.controller.js";
@@ -31,4 +32,6 @@ router.post("/updatePFP", (req, res, next) => {
 });
 
 router.get("/getUser", getUser);
+
+router.get("/getId", getId);
 export default router;

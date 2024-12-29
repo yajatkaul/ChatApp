@@ -40,7 +40,6 @@ class _ConversationPageState extends State<ConversationPage> {
         userId = jsonDecode(response.body)['userId'];
       });
     }
-    print(response.body);
   }
 
   Future<void> _sendMessage() async {
@@ -62,13 +61,40 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   Future<void> _socketConnection() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? sessionCookie = prefs.getString('session_cookie');
+
+    final id = await http.get(
+      Uri.parse('$serverURL/api/user/getId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Cookie': sessionCookie!,
+      },
+    );
+
+    String userId = id.body; // Extract the raw response body
+
+// Check if the response contains quotes and remove them
+    if (userId.startsWith('"') && userId.endsWith('"')) {
+      userId = userId.substring(1, userId.length - 1);
+    }
+
     IO.Socket socket = IO.io(
-        serverURL, IO.OptionBuilder().setTransports(['websocket']).build());
+        serverURL,
+        IO.OptionBuilder()
+            .setTransports(['websocket']).setQuery({'userId': userId}).build());
 
     socket.connect();
 
     socket.onConnect((_) {
       print('Connected to server');
+    });
+
+    socket.on("newMessage", (message) {
+      print(message);
+      setState(() {
+        messages.add(message);
+      });
     });
 
     // Connection error

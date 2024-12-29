@@ -29,8 +29,6 @@ class _ChatState extends State<Chat> {
       },
     );
 
-    print(response.body);
-
     if (response.statusCode == 200 && mounted) {
       setState(() {
         conversations = jsonDecode(response.body);
@@ -62,21 +60,29 @@ class _ChatState extends State<Chat> {
           ],
         ),
         body: ListView(
-          children: conversations.map((conversation) {
-            if (conversation['type'] == 'DM') {
-              return ConversationTile(
-                name: conversation['members'][0]['displayName'],
-                image: conversation['members'][0]['profilePic'],
-                convoId: conversation['_id'],
-              );
-            } else {
-              return ConversationTile(
-                name: conversation['name'],
-                image: conversation['image'],
-                convoId: conversation['_id'],
-              );
-            }
-          }).toList(),
+          children: [
+            ...conversations.map((conversation) {
+              if (conversation['type'] == 'DM') {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: ConversationTile(
+                    name: conversation['members'][0]['displayName'],
+                    image: conversation['members'][0]['profilePic'],
+                    convoId: conversation['_id'],
+                  ),
+                );
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: ConversationTile(
+                    name: conversation['name'],
+                    image: conversation['image'],
+                    convoId: conversation['_id'],
+                  ),
+                );
+              }
+            }),
+          ],
         ));
   }
 }
