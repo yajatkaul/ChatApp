@@ -22,7 +22,7 @@ class _NewDMState extends State<NewDM> {
     String? sessionCookie = prefs.getString('session_cookie');
 
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:5000/api/dm/getUsersForMessage'),
+      Uri.parse('$serverURL/api/dm/getUsersForMessage'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Cookie': sessionCookie!,

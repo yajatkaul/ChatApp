@@ -89,7 +89,7 @@ class _ChatState extends State<Chat> {
 
 class ConversationTile extends StatelessWidget {
   final String name;
-  final String image;
+  final String? image;
   final String convoId;
   const ConversationTile(
       {super.key,
@@ -117,7 +117,9 @@ class ConversationTile extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: Image(
-                  image: NetworkImage('$serverURL/api/$image'),
+                  image: NetworkImage(image == null
+                      ? 'https://play-lh.googleusercontent.com/z-ppwF62-FuXHMO7q20rrBMZeOnHfx1t9UPkUqtyouuGW7WbeUZECmyeNHAus2Jcxw=w526-h296-rw'
+                      : '$serverURL/api/$image'),
                   fit: BoxFit.cover,
                 ),
               ),
