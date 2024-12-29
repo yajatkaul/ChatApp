@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:chatapp/components/MessageBubbles.dart';
 import 'package:chatapp/utils/env.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:line_icons/line_icon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -132,34 +134,50 @@ class _ConversationPageState extends State<ConversationPage> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ListView(
               children: messages.map((message) {
-                if (message['_id'] == userId) {
-                  return MessageSent(
-                    message: message['message'],
-                  );
+                if (message['type'] == "MESSAGE") {
+                  if (message['_id'] == userId) {
+                    return MessageSent(
+                      message: message['message'],
+                    );
+                  } else {
+                    return MessageRecieved(
+                      message: message['message'],
+                    );
+                  }
                 } else {
-                  return MessageRecieved(
-                    message: message['message'],
-                  );
+                  return SizedBox();
                 }
               }).toList(),
             ),
           )),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Type a message',
+            child: TextField(
+              controller: _messageController,
+              decoration: InputDecoration(
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(25)),
+                hintText: 'Type a message',
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize
+                      .min, // Ensures the row takes up minimal space
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        // Action for first button
+                      },
+                      icon: const Icon(Icons.mic),
+                      color: Colors.blue,
+                      iconSize: 24,
                     ),
-                  ),
+                    IconButton(
+                      onPressed: _sendMessage,
+                      icon: const Icon(Icons.send),
+                      color: Colors.blue,
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                    onPressed: _sendMessage, child: const Text("Click"))
-              ],
+              ),
             ),
           )
         ],

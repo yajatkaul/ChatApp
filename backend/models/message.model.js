@@ -17,6 +17,11 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    type: {
+      type: String,
+      enum: ["MESSAGE", "VOICE", "IMAGE", "VIDEO", "FILE"],
+      default: "MESSAGE",
+    },
   },
   { timestamps: true }
 );

@@ -96,8 +96,9 @@ class _NewDMState extends State<NewDM> {
                         height: 70,
                         width: 70,
                         child: Image(
-                          image: NetworkImage(
-                              '$serverURL/api/${user['profilePic']}'),
+                          image: NetworkImage(user['profilePic'] == null
+                              ? 'https://play-lh.googleusercontent.com/z-ppwF62-FuXHMO7q20rrBMZeOnHfx1t9UPkUqtyouuGW7WbeUZECmyeNHAus2Jcxw=w526-h296-rw'
+                              : '$serverURL/api/${user['profilePic']}'),
                           fit: BoxFit.cover,
                         ),
                       ),

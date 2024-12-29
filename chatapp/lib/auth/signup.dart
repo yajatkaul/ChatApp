@@ -17,6 +17,8 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   final TextEditingController _usernameController = TextEditingController();
 
+  final TextEditingController _displaynameController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
 
   final TextEditingController _confirmPasswordController =
@@ -24,6 +26,7 @@ class _SignUpState extends State<SignUp> {
 
   Future<void> _login(BuildContext context) async {
     final String username = _usernameController.text;
+    final String displayName = _displaynameController.text;
     final String password = _passwordController.text;
     final String confirmPassword = _confirmPasswordController.text;
 
@@ -34,7 +37,8 @@ class _SignUpState extends State<SignUp> {
         'Content-Type': 'application/json; charset=UTF-8',
       }, // Replace with your API endpoint
       body: jsonEncode(<String, String>{
-        'displayName': username,
+        'displayName': displayName,
+        'userName': username,
         'password': password,
         'confirmPassword': confirmPassword
       }),
@@ -80,6 +84,18 @@ class _SignUpState extends State<SignUp> {
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Username",
+                  )),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: TextField(
+                  controller: _displaynameController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "DisplayName",
                   )),
             ),
             const SizedBox(
