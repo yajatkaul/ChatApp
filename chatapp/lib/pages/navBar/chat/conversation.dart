@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:line_icons/line_icon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class ConversationPage extends StatefulWidget {
   final String conversationId;
@@ -123,6 +124,12 @@ class _ConversationPageState extends State<ConversationPage> {
     super.dispose();
   }
 
+  Future<void> _sendGallery() async {
+    final List<AssetEntity>? result = await AssetPicker.pickAssets(context);
+
+    if (result != null) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,7 +152,7 @@ class _ConversationPageState extends State<ConversationPage> {
                     );
                   }
                 } else {
-                  return SizedBox();
+                  return const SizedBox();
                 }
               }).toList(),
             ),
@@ -167,6 +174,12 @@ class _ConversationPageState extends State<ConversationPage> {
                         // Action for first button
                       },
                       icon: const Icon(Icons.mic),
+                      color: Colors.blue,
+                      iconSize: 24,
+                    ),
+                    IconButton(
+                      onPressed: _sendGallery,
+                      icon: const Icon(Icons.image_rounded),
                       color: Colors.blue,
                       iconSize: 24,
                     ),

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="371f961a-5336-486f-a863-9cff42ce19a3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/chatapp/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/chatapp/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chatapp/lib/pages/navBar/chat/conversation.dart" beforeDir="false" afterPath="$PROJECT_DIR$/chatapp/lib/pages/navBar/chat/conversation.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chatapp/lib/utils/env.dart" beforeDir="false" afterPath="$PROJECT_DIR$/chatapp/lib/utils/env.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chatapp/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/chatapp/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chatapp/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/chatapp/pubspec.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="2qt8FaT9dH8VKTCtVyOzWi6V3ZE" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/mccra/OneDrive/Desktop/Projects/ChatApp/chatapp/android"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="371f961a-5336-486f-a863-9cff42ce19a3" name="Changes" comment="" />
+      <created>1735470407908</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1735470407908</updated>
+    </task>
+    <servers />
+  </component>
+</project>
