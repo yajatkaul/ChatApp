@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:chatapp/pages/navBar/chat/conversation.dart';
+import 'package:chatapp/providers/dm_provider.dart';
 import 'package:chatapp/utils/env.dart';
-import 'package:chatapp/utils/showToast.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class NewDM extends StatefulWidget {
   const NewDM({super.key});
@@ -15,35 +16,10 @@ class NewDM extends StatefulWidget {
 }
 
 class _NewDMState extends State<NewDM> {
-  List<dynamic> users = [];
-
-  Future<void> _getUsers(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? sessionCookie = prefs.getString('session_cookie');
-
-    final response = await http.get(
-      Uri.parse('$serverURL/api/dm/getUsersForMessage'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Cookie': sessionCookie!,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      setState(() {
-        users = jsonDecode(response.body);
-      });
-      print(users);
-    } else {
-      final responseBody = jsonDecode(response.body);
-      showToast(responseBody['error'], false, context);
-    }
-  }
-
   @override
-  void initState() {
-    super.initState();
-    _getUsers(context);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<DmProvider>(context, listen: false).getAllUsers(context);
   }
 
   @override
@@ -53,7 +29,7 @@ class _NewDMState extends State<NewDM> {
         title: const Text("New Message"),
       ),
       body: ListView(
-        children: users.map((user) {
+        children: Provider.of<DmProvider>(context).all_users.map((user) {
           return SizedBox(
             height: 80,
             child: ElevatedButton(

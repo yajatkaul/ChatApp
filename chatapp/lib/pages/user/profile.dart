@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
-import 'package:delightful_toast/delight_toast.dart';
-import 'package:delightful_toast/toast/components/toast_card.dart';
-import 'package:delightful_toast/toast/utils/enums.dart';
+import 'package:chatapp/utils/showToast.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -12,6 +11,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -21,7 +21,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String? profilePic;
   File? galleryPic;
   bool selectedFromGallery = false;
 
@@ -52,11 +51,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
-      showToast(responseBody['result'], true);
+      showToast(responseBody['result'], true, context);
       Navigator.pop(context);
     } else {
       final responseBody = jsonDecode(response.body);
-      showToast(responseBody['error'], false);
+      showToast(responseBody['error'], false, context);
     }
   }
 
@@ -87,58 +86,13 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> _getDetails(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? sessionCookie = prefs.getString('session_cookie');
-
-    final response = await http.get(
-      Uri.parse('$serverURL/api/user/getUser'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Cookie': sessionCookie!,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
-      setState(() {
-        if (responseBody['profilePic'] == null) {
-          profilePic = null;
-          return;
-        }
-        profilePic = '$serverURL/api/${responseBody['profilePic']}';
-        _usernameController.text = responseBody['displayName'];
-      });
-    } else {
-      final responseBody = jsonDecode(response.body);
-      showToast(responseBody['error'], false);
-    }
-  }
-
-  void showToast(String message, bool success) {
-    DelightToastBar(
-      position: DelightSnackbarPosition.top,
-      autoDismiss: true,
-      builder: (context) => ToastCard(
-        leading: Icon(
-          success ? Icons.check_circle : Icons.flutter_dash,
-          size: 28,
-        ),
-        title: Text(
-          message,
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
-          ),
-        ),
-      ),
-    ).show(context);
-  }
-
   @override
-  void initState() {
-    super.initState();
-    _getDetails(context);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final userName = Provider.of<UserProvider>(context, listen: false).userName;
+    if (userName != null) {
+      _usernameController.text = userName;
+    }
   }
 
   @override
@@ -174,7 +128,8 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20.0),
-                child: profilePic == null && !selectedFromGallery
+                child: Provider.of<UserProvider>(context).profilePic == null &&
+                        !selectedFromGallery
                     ? Image.network(
                         "https://i.pinimg.com/736x/f6/bc/9a/f6bc9a75409c4db0acf3683bab1fab9c.jpg",
                         height: 160,
@@ -182,7 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       )
                     : !selectedFromGallery
                         ? Image.network(
-                            profilePic!,
+                            Provider.of<UserProvider>(context).profilePic!,
                             height: 160,
                             fit: BoxFit.cover,
                           )

@@ -1,18 +1,12 @@
-import 'package:chatapp/auth/login.dart';
+import 'package:chatapp/providers/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
 
-  Future<void> _logout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('session_cookie');
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
+  _logout(BuildContext context) {
+    Provider.of<UserProvider>(context, listen: false).onLogout(context);
   }
 
   @override

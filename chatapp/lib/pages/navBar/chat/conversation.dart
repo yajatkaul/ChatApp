@@ -1,14 +1,15 @@
 import 'dart:convert';
 
 import 'package:chatapp/components/MessageBubbles.dart';
+import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:line_icons/line_icon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:provider/provider.dart';
 
 class ConversationPage extends StatefulWidget {
   final String conversationId;
@@ -20,7 +21,6 @@ class ConversationPage extends StatefulWidget {
 
 class _ConversationPageState extends State<ConversationPage> {
   List<dynamic> messages = [];
-  late String userId;
 
   final _messageController = TextEditingController();
 
@@ -40,7 +40,6 @@ class _ConversationPageState extends State<ConversationPage> {
     if (response.statusCode == 200 && mounted) {
       setState(() {
         messages = jsonDecode(response.body)['messages'];
-        userId = jsonDecode(response.body)['userId'];
       });
     }
   }
@@ -64,28 +63,10 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   Future<void> _socketConnection() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? sessionCookie = prefs.getString('session_cookie');
-
-    final id = await http.get(
-      Uri.parse('$serverURL/api/user/getId'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Cookie': sessionCookie!,
-      },
-    );
-
-    String userId = id.body; // Extract the raw response body
-
-// Check if the response contains quotes and remove them
-    if (userId.startsWith('"') && userId.endsWith('"')) {
-      userId = userId.substring(1, userId.length - 1);
-    }
-
     IO.Socket socket = IO.io(
         serverURL,
-        IO.OptionBuilder()
-            .setTransports(['websocket']).setQuery({'userId': userId}).build());
+        IO.OptionBuilder().setTransports(['websocket']).setQuery(
+            {'userId': Provider.of<UserProvider>(context).id}).build());
 
     socket.connect();
 
@@ -115,6 +96,11 @@ class _ConversationPageState extends State<ConversationPage> {
   void initState() {
     super.initState();
     _getMessages();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _socketConnection();
   }
 
@@ -142,7 +128,7 @@ class _ConversationPageState extends State<ConversationPage> {
             child: ListView(
               children: messages.map((message) {
                 if (message['type'] == "MESSAGE") {
-                  if (message['_id'] == userId) {
+                  if (message['_id'] == Provider.of<UserProvider>(context).id) {
                     return MessageSent(
                       message: message['message'],
                     );

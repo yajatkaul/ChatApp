@@ -21,6 +21,7 @@ dependencies:
   socket_io_client: ^3.0.2
   cupertino_icons: ^1.0.8
   wechat_assets_picker: ^9.4.2
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

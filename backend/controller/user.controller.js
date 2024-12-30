@@ -15,7 +15,6 @@ export const changeUsername = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.session.userId);
-
     res.status(200).json(user);
   } catch (err) {
     console.log(err);
@@ -34,8 +33,4 @@ export const updatePFP = async (req, res) => {
     console.log(err);
     return res.status(500).json({ error: "Internal server error" });
   }
-};
-
-export const getId = async (req, res) => {
-  return res.status(200).json(req.session.userId);
 };

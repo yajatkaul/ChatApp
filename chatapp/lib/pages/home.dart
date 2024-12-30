@@ -1,10 +1,12 @@
 import 'package:chatapp/pages/navBar/chat/chat.dart';
-import 'package:chatapp/pages/navBar/home.dart';
-import 'package:chatapp/pages/navBar/profile.dart';
-import 'package:chatapp/pages/navBar/search.dart';
+import 'package:chatapp/pages/navBar/home/home.dart';
+import 'package:chatapp/pages/navBar/profile/profile.dart';
+import 'package:chatapp/pages/navBar/search/search.dart';
+import 'package:chatapp/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,13 +16,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Widget> pages = [
-    const Home(),
-    const Search(),
-    const Chat(),
-    const Profile()
-  ];
-
   int _currentPage = 0;
   final PageController _pageController = PageController();
 
@@ -29,6 +24,22 @@ class _HomePageState extends State<HomePage> {
     _pageController.dispose();
     super.dispose();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (Provider.of<UserProvider>(context, listen: false).userName == null) {
+      Provider.of<UserProvider>(context, listen: false).getDetails(context);
+    }
+  }
+
+  List<Widget> pages = [
+    const Home(),
+    const Search(),
+    const Chat(),
+    const Profile()
+  ];
 
   @override
   Widget build(BuildContext context) {
