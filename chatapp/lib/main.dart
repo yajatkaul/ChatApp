@@ -1,6 +1,5 @@
 import 'package:chatapp/auth/login.dart';
 import 'package:chatapp/pages/home.dart';
-import 'package:chatapp/providers/dm_provider.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +24,6 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => UserProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => DmProvider(),
-        )
       ],
       child: MaterialApp(
         home: FutureBuilder<String?>(

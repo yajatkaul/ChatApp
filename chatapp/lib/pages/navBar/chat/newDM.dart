@@ -1,12 +1,11 @@
 import 'dart:convert';
 
 import 'package:chatapp/pages/navBar/chat/conversation.dart';
-import 'package:chatapp/providers/dm_provider.dart';
+import 'package:chatapp/pages/navBar/chat/hooks/newDmHooks.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 class NewDM extends StatefulWidget {
   const NewDM({super.key});
@@ -16,10 +15,13 @@ class NewDM extends StatefulWidget {
 }
 
 class _NewDMState extends State<NewDM> {
+  List<dynamic> users = [];
+
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    Provider.of<DmProvider>(context, listen: false).getAllUsers(context);
+    users = await NewDmHooks().getAllUsers(context);
+    setState(() {});
   }
 
   @override
@@ -29,7 +31,7 @@ class _NewDMState extends State<NewDM> {
         title: const Text("New Message"),
       ),
       body: ListView(
-        children: Provider.of<DmProvider>(context).all_users.map((user) {
+        children: users.map((user) {
           return SizedBox(
             height: 80,
             child: ElevatedButton(
