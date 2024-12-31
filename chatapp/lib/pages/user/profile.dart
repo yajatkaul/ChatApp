@@ -69,17 +69,20 @@ class _ProfilePageState extends State<ProfilePage> {
                     ? Image.network(
                         "https://i.pinimg.com/736x/f6/bc/9a/f6bc9a75409c4db0acf3683bab1fab9c.jpg",
                         height: 160,
+                        width: 160,
                         fit: BoxFit.cover,
                       )
                     : !selectedFromGallery
                         ? Image.network(
                             Provider.of<UserProvider>(context).profilePic!,
                             height: 160,
+                            width: 160,
                             fit: BoxFit.cover,
                           )
                         : Image.file(
                             galleryPic!,
                             height: 160,
+                            width: 160,
                             fit: BoxFit.cover,
                           ),
               ),

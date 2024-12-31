@@ -18,6 +18,7 @@ class _ChatState extends State<Chat> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     conversations = await ConversationHook().getConversations(context);
+    setState(() {});
   }
 
   @override
