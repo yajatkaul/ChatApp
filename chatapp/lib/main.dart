@@ -1,4 +1,4 @@
-import 'package:chatapp/auth/login.dart';
+import 'package:chatapp/pages/auth/login.dart';
 import 'package:chatapp/pages/home.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

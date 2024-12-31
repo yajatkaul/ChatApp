@@ -18,14 +18,15 @@ class _ProfilePageState extends State<ProfilePage> {
   File? galleryPic;
   bool selectedFromGallery = false;
   XFile? image;
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _displayNameController = TextEditingController();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final userName = Provider.of<UserProvider>(context, listen: false).userName;
-    if (userName != null) {
-      _usernameController.text = userName;
+    final displayName =
+        Provider.of<UserProvider>(context, listen: false).displayName;
+    if (displayName != null) {
+      _displayNameController.text = displayName;
     }
   }
 
@@ -38,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
           IconButton(
               onPressed: () {
                 UpdateUser().updateDetails(
-                    context, _usernameController.text, galleryPic, image);
+                    context, _displayNameController.text, galleryPic, image);
               },
               icon: const Icon(
                 Icons.check_circle,
@@ -89,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: TextField(
-                  controller: _usernameController,
+                  controller: _displayNameController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: "Username",

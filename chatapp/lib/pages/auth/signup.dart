@@ -1,4 +1,4 @@
-import 'package:chatapp/auth/hooks/signup.dart';
+import 'package:chatapp/pages/auth/hooks/signup.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {

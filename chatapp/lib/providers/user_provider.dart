@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:chatapp/auth/login.dart';
+import 'package:chatapp/pages/auth/login.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:chatapp/utils/showToast.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class UserProvider extends ChangeNotifier {
   String? id;
-  String? userName;
+  String? displayName;
   String? profilePic;
   String? sessionCookie;
 
@@ -31,7 +31,7 @@ class UserProvider extends ChangeNotifier {
     );
 
     id = null;
-    userName = null;
+    displayName = null;
     profilePic = null;
     sessionCookie = null;
     notifyListeners();
@@ -54,11 +54,12 @@ class UserProvider extends ChangeNotifier {
 
       if (responseBody['profilePic'] == null) {
         profilePic = null;
-        return;
+      } else {
+        profilePic = '$serverURL/api/${responseBody['profilePic']}';
       }
       id = responseBody['_id'];
-      profilePic = '$serverURL/api/${responseBody['profilePic']}';
-      userName = responseBody['displayName'];
+      displayName = responseBody['displayName'];
+
       notifyListeners();
     } else {
       final responseBody = jsonDecode(response.body);

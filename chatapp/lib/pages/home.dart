@@ -1,4 +1,4 @@
-import 'package:chatapp/pages/navBar/chat/chat.dart';
+import 'package:chatapp/pages/navBar/chat/conversations.dart';
 import 'package:chatapp/pages/navBar/home/home.dart';
 import 'package:chatapp/pages/navBar/profile/profile.dart';
 import 'package:chatapp/pages/navBar/search/search.dart';
@@ -28,10 +28,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    if (Provider.of<UserProvider>(context, listen: false).userName == null) {
-      Provider.of<UserProvider>(context, listen: false).getDetails(context);
-    }
+    Provider.of<UserProvider>(context, listen: false).getDetails(context);
   }
 
   List<Widget> pages = [
