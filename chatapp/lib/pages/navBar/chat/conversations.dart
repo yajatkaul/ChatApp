@@ -1,8 +1,6 @@
-import 'dart:convert';
-
 import 'package:chatapp/pages/navBar/chat/chat.dart';
-import 'package:chatapp/pages/navBar/chat/hooks/conversationHook.dart';
-import 'package:chatapp/pages/navBar/chat/newDM.dart';
+import 'package:chatapp/pages/navBar/chat/hooks/conversation_hook.dart';
+import 'package:chatapp/pages/navBar/chat/new_dm.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
 

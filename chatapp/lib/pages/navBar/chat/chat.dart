@@ -1,5 +1,5 @@
 import 'package:chatapp/components/MessageBubbles.dart';
-import 'package:chatapp/pages/navBar/chat/hooks/chatHooks.dart';
+import 'package:chatapp/pages/navBar/chat/hooks/chat_hooks.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:chatapp/pages/navBar/chat/chat.dart';
-import 'package:chatapp/pages/navBar/chat/hooks/newDmHooks.dart';
+import 'package:chatapp/pages/navBar/chat/hooks/new_dm_hooks.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';

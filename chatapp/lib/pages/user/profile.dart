@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chatapp/pages/user/hooks/updateUser.dart';
+import 'package:chatapp/pages/user/hooks/update_user.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 
