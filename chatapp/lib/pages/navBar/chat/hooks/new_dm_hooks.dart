@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
-import 'package:chatapp/utils/showToast.dart';
+import 'package:chatapp/utils/show_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';

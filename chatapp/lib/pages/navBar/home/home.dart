@@ -1,4 +1,4 @@
-import 'package:chatapp/components/CustomAppBar.dart';
+import 'package:chatapp/components/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {

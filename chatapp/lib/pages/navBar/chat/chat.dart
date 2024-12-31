@@ -1,4 +1,4 @@
-import 'package:chatapp/components/MessageBubbles.dart';
+import 'package:chatapp/components/message_bubbles.dart';
 import 'package:chatapp/pages/navBar/chat/hooks/chat_hooks.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';

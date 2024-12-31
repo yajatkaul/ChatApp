@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
-import 'package:chatapp/utils/showToast.dart';
+import 'package:chatapp/utils/show_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';

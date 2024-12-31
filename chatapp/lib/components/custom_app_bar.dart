@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:chatapp/pages/user/profile.dart';
 import 'package:chatapp/utils/env.dart';
-import 'package:chatapp/utils/showToast.dart';
+import 'package:chatapp/utils/show_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
