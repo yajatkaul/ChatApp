@@ -65,10 +65,16 @@ class _ConversationPageState extends State<ConversationPage> {
     super.dispose();
   }
 
-  Future<void> _sendGallery() async {
+  Future<void> _sendAsset() async {
     final List<AssetEntity>? result = await AssetPicker.pickAssets(context);
 
-    if (result != null) {}
+    if (result != null) {
+      try {
+        ChatHooks().sendAsset(context, result, widget.conversationId);
+      } catch (e) {
+        print('Error occurred while uploading assets: $e');
+      }
+    }
   }
 
   @override
@@ -90,6 +96,26 @@ class _ConversationPageState extends State<ConversationPage> {
                   } else {
                     return MessageRecieved(
                       message: message['message'],
+                    );
+                  }
+                } else if (message['type'] == "IMAGE") {
+                  if (message['_id'] == Provider.of<UserProvider>(context).id) {
+                    return ImageSent(
+                      image: message['message'],
+                    );
+                  } else {
+                    return ImageRecieved(
+                      image: message['message'],
+                    );
+                  }
+                } else if (message['type'] == "VIDEO") {
+                  if (message['_id'] == Provider.of<UserProvider>(context).id) {
+                    return VideoSent(
+                      video: message['message'],
+                    );
+                  } else {
+                    return VideoRecieved(
+                      image: message['message'],
                     );
                   }
                 } else {
@@ -119,7 +145,7 @@ class _ConversationPageState extends State<ConversationPage> {
                       iconSize: 24,
                     ),
                     IconButton(
-                      onPressed: _sendGallery,
+                      onPressed: _sendAsset,
                       icon: const Icon(Icons.image_rounded),
                       color: Colors.blue,
                       iconSize: 24,

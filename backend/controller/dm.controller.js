@@ -75,6 +75,59 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+export const sendAsset = async (req, res) => {
+  try {
+    const assets = req.files;
+    const { conversationId } = req.query;
+
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found" });
+    }
+
+    const promises = assets.map((asset) => {
+      const mimeType = asset.mimetype;
+      console.log(mimeType);
+      let type;
+      if (mimeType.startsWith("image/")) {
+        type = "IMAGE";
+      } else if (mimeType.startsWith("video/")) {
+        type = "VIDEO";
+      } else {
+        throw new Error("Invalid file type");
+      }
+
+      const newMessage = new Message({
+        conversationId,
+        userId: req.session.userId,
+        type,
+        message: asset.path,
+      });
+
+      return newMessage
+        .save()
+        .then((savedMessage) => savedMessage.populate("userId"));
+    });
+
+    const populatedMessages = await Promise.all(promises);
+
+    const memberIds = conversation.members;
+    memberIds.forEach((memberId) => {
+      const memberSocketId = userSocketMap[memberId.toString()];
+      if (memberSocketId) {
+        populatedMessages.forEach((message) => {
+          io.to(memberSocketId).emit("newMessage", message);
+        });
+      }
+    });
+
+    res.status(200).json({ result: "Success" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const getMessage = async (req, res) => {
   try {
     const { conversationId } = req.query;

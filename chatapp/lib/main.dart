@@ -1,11 +1,14 @@
 import 'package:chatapp/pages/auth/login.dart';
 import 'package:chatapp/pages/home.dart';
 import 'package:chatapp/providers/user_provider.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
   runApp(const MainApp());
 }
 
