@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:chatapp/pages/user/profile.dart';
-import 'package:chatapp/utils/env.dart';
-import 'package:chatapp/utils/show_toast.dart';
+import 'package:chatapp/providers/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -18,41 +14,6 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-  String? profilePic;
-
-  Future<void> _getDetails(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? sessionCookie = prefs.getString('session_cookie');
-
-    final response = await http.get(
-      Uri.parse('$serverURL/api/user/getUser'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Cookie': sessionCookie!,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
-      setState(() {
-        if (responseBody['profilePic'] == null) {
-          profilePic = null;
-          return;
-        }
-        profilePic = '$serverURL/api/${responseBody['profilePic']}';
-      });
-    } else {
-      final responseBody = jsonDecode(response.body);
-      showToast(responseBody['error'], false, context);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _getDetails(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -68,9 +29,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
             icon: ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
               child: Image.network(
-                profilePic == null
+                Provider.of<UserProvider>(context).profilePic == null
                     ? "https://i.pinimg.com/736x/f6/bc/9a/f6bc9a75409c4db0acf3683bab1fab9c.jpg"
-                    : profilePic!,
+                    : Provider.of<UserProvider>(context).profilePic!,
+                width: 70,
+                height: 70,
                 fit: BoxFit.cover,
               ),
             ))
