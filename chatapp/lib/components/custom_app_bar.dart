@@ -1,5 +1,6 @@
 import 'package:chatapp/pages/user/profile.dart';
 import 'package:chatapp/providers/user_provider.dart';
+import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +31,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               borderRadius: BorderRadius.circular(20.0),
               child: Image.network(
                 Provider.of<UserProvider>(context).profilePic == null
-                    ? "https://i.pinimg.com/736x/f6/bc/9a/f6bc9a75409c4db0acf3683bab1fab9c.jpg"
+                    ? defaultImage
                     : Provider.of<UserProvider>(context).profilePic!,
                 width: 40,
                 height: 40,

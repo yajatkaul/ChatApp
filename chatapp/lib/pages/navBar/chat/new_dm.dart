@@ -75,7 +75,7 @@ class _NewDMState extends State<NewDM> {
                         width: 70,
                         child: Image(
                           image: NetworkImage(user['profilePic'] == null
-                              ? 'https://play-lh.googleusercontent.com/z-ppwF62-FuXHMO7q20rrBMZeOnHfx1t9UPkUqtyouuGW7WbeUZECmyeNHAus2Jcxw=w526-h296-rw'
+                              ? defaultImage
                               : '$serverURL/api/${user['profilePic']}'),
                           fit: BoxFit.cover,
                         ),

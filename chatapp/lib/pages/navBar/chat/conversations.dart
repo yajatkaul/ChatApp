@@ -96,9 +96,8 @@ class ConversationTile extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: Image(
-                  image: NetworkImage(image == null
-                      ? 'https://play-lh.googleusercontent.com/z-ppwF62-FuXHMO7q20rrBMZeOnHfx1t9UPkUqtyouuGW7WbeUZECmyeNHAus2Jcxw=w526-h296-rw'
-                      : '$serverURL/api/$image'),
+                  image: NetworkImage(
+                      image == null ? defaultImage : '$serverURL/api/$image'),
                   fit: BoxFit.cover,
                 ),
               ),

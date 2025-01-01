@@ -1,6 +1,8 @@
+import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class MessageSent extends StatelessWidget {
@@ -29,16 +31,19 @@ class MessageSent extends StatelessWidget {
           ),
         ),
         ClipRRect(
-          borderRadius: BorderRadius.circular(100),
-          child: const SizedBox(
-            height: 50,
-            width: 50,
-            child: Image(
-              image: NetworkImage('https://i.sstatic.net/DHtN3m.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+            borderRadius: BorderRadius.circular(100),
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Image.network(
+                Provider.of<UserProvider>(context).profilePic == null
+                    ? defaultImage
+                    : Provider.of<UserProvider>(context).profilePic!,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            )),
       ],
     );
   }
@@ -46,7 +51,9 @@ class MessageSent extends StatelessWidget {
 
 class MessageRecieved extends StatelessWidget {
   final String message;
-  const MessageRecieved({super.key, required this.message});
+  final String? profilePic;
+  const MessageRecieved(
+      {super.key, required this.message, required this.profilePic});
 
   @override
   Widget build(BuildContext context) {
@@ -55,16 +62,17 @@ class MessageRecieved extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(100),
-          child: const SizedBox(
-            height: 50,
-            width: 50,
-            child: Image(
-              image: NetworkImage('https://i.sstatic.net/DHtN3m.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+            borderRadius: BorderRadius.circular(100),
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Image.network(
+                profilePic == null ? defaultImage : profilePic!,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            )),
         ChatBubble(
           clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
           backGroundColor: const Color(0xffE7E7ED),
@@ -86,7 +94,9 @@ class MessageRecieved extends StatelessWidget {
 
 class ImageRecieved extends StatelessWidget {
   final String image;
-  const ImageRecieved({super.key, required this.image});
+  final String? profilePic;
+  const ImageRecieved(
+      {super.key, required this.image, required this.profilePic});
 
   @override
   Widget build(BuildContext context) {
@@ -95,16 +105,17 @@ class ImageRecieved extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(100),
-          child: const SizedBox(
-            height: 50,
-            width: 50,
-            child: Image(
-              image: NetworkImage('https://i.sstatic.net/DHtN3m.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+            borderRadius: BorderRadius.circular(100),
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Image.network(
+                profilePic == null ? defaultImage : profilePic!,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            )),
         ChatBubble(
           clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
           backGroundColor: const Color(0xffE7E7ED),
@@ -142,16 +153,19 @@ class ImageSent extends StatelessWidget {
               child: Image(image: NetworkImage("$serverURL/api/$image"))),
         ),
         ClipRRect(
-          borderRadius: BorderRadius.circular(100),
-          child: const SizedBox(
-            height: 50,
-            width: 50,
-            child: Image(
-              image: NetworkImage('https://i.sstatic.net/DHtN3m.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+            borderRadius: BorderRadius.circular(100),
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Image.network(
+                Provider.of<UserProvider>(context).profilePic == null
+                    ? defaultImage
+                    : Provider.of<UserProvider>(context).profilePic!,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            )),
       ],
     );
   }
@@ -159,7 +173,9 @@ class ImageSent extends StatelessWidget {
 
 class VideoRecieved extends StatefulWidget {
   final String video;
-  const VideoRecieved({super.key, required this.video});
+  final String? profilePic;
+  const VideoRecieved(
+      {super.key, required this.video, required this.profilePic});
 
   @override
   State<VideoRecieved> createState() => _VideoRecievedState();
@@ -191,16 +207,17 @@ class _VideoRecievedState extends State<VideoRecieved> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(100),
-          child: const SizedBox(
-            height: 50,
-            width: 50,
-            child: Image(
-              image: NetworkImage('https://i.sstatic.net/DHtN3m.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+            borderRadius: BorderRadius.circular(100),
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Image.network(
+                widget.profilePic == null ? defaultImage : widget.profilePic!,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            )),
         ChatBubble(
             clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
             backGroundColor: const Color(0xffE7E7ED),
@@ -279,16 +296,19 @@ class _VideoSentState extends State<VideoSent> {
           ),
         ),
         ClipRRect(
-          borderRadius: BorderRadius.circular(100),
-          child: const SizedBox(
-            height: 50,
-            width: 50,
-            child: Image(
-              image: NetworkImage('https://i.sstatic.net/DHtN3m.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+            borderRadius: BorderRadius.circular(100),
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Image.network(
+                Provider.of<UserProvider>(context).profilePic == null
+                    ? defaultImage
+                    : Provider.of<UserProvider>(context).profilePic!,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            )),
       ],
     );
   }

@@ -96,6 +96,7 @@ class _ConversationPageState extends State<ConversationPage> {
                     );
                   } else {
                     return MessageRecieved(
+                      profilePic: message['userId']['profilePic'],
                       message: message['message'],
                     );
                   }
@@ -107,6 +108,7 @@ class _ConversationPageState extends State<ConversationPage> {
                     );
                   } else {
                     return ImageRecieved(
+                      profilePic: message['userId']['profilePic'],
                       image: message['message'],
                     );
                   }
@@ -118,6 +120,7 @@ class _ConversationPageState extends State<ConversationPage> {
                     );
                   } else {
                     return VideoRecieved(
+                      profilePic: message['userId']['profilePic'],
                       video: message['message'],
                     );
                   }

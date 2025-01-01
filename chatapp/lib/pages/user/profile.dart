@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chatapp/pages/user/hooks/update_user.dart';
 import 'package:chatapp/providers/user_provider.dart';
+import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -67,7 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Provider.of<UserProvider>(context).profilePic == null &&
                         !selectedFromGallery
                     ? Image.network(
-                        "https://i.pinimg.com/736x/f6/bc/9a/f6bc9a75409c4db0acf3683bab1fab9c.jpg",
+                        defaultImage,
                         height: 160,
                         width: 160,
                         fit: BoxFit.cover,
