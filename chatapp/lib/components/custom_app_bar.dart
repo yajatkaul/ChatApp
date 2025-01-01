@@ -32,8 +32,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 Provider.of<UserProvider>(context).profilePic == null
                     ? "https://i.pinimg.com/736x/f6/bc/9a/f6bc9a75409c4db0acf3683bab1fab9c.jpg"
                     : Provider.of<UserProvider>(context).profilePic!,
-                width: 70,
-                height: 70,
+                width: 40,
+                height: 40,
                 fit: BoxFit.cover,
               ),
             ))
