@@ -60,6 +60,7 @@ export const sendMessage = async (req, res) => {
     await newMessage.save();
 
     const populatedMessage = await newMessage.populate("userId");
+
     const memberIds = conversation.members;
     memberIds.forEach((memberId) => {
       const memberSocketId = userSocketMap[memberId.toString()];
@@ -103,7 +104,7 @@ export const sendAsset = async (req, res) => {
         type,
         message: asset.path,
       });
-
+   
       return newMessage
         .save()
         .then((savedMessage) => savedMessage.populate("userId"));
@@ -131,9 +132,9 @@ export const sendAsset = async (req, res) => {
 export const getMessage = async (req, res) => {
   try {
     const { conversationId } = req.query;
-    const messages = await Message.find({ conversationId });
+    const messages = await Message.find({ conversationId }).populate("userId");
 
-    res.status(200).json({ messages, userId: req.session.userId });
+    res.status(200).json(messages);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Internal server error" });

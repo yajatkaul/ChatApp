@@ -1,18 +1,17 @@
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+import 'package:video_player/video_player.dart';
 
-class MessageRecieved extends StatelessWidget {
+class MessageSent extends StatelessWidget {
   final String message;
-  const MessageRecieved({super.key, required this.message});
+  const MessageSent({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ChatBubble(
           clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
@@ -45,15 +44,15 @@ class MessageRecieved extends StatelessWidget {
   }
 }
 
-class MessageSent extends StatelessWidget {
+class MessageRecieved extends StatelessWidget {
   final String message;
-  const MessageSent({super.key, required this.message});
+  const MessageRecieved({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(100),
@@ -85,15 +84,15 @@ class MessageSent extends StatelessWidget {
   }
 }
 
-class ImageSent extends StatelessWidget {
+class ImageRecieved extends StatelessWidget {
   final String image;
-  const ImageSent({super.key, required this.image});
+  const ImageRecieved({super.key, required this.image});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(100),
@@ -121,15 +120,15 @@ class ImageSent extends StatelessWidget {
   }
 }
 
-class ImageRecieved extends StatelessWidget {
+class ImageSent extends StatelessWidget {
   final String image;
-  const ImageRecieved({super.key, required this.image});
+  const ImageSent({super.key, required this.image});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ChatBubble(
           clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
@@ -158,33 +157,30 @@ class ImageRecieved extends StatelessWidget {
   }
 }
 
-class VideoSent extends StatefulWidget {
+class VideoRecieved extends StatefulWidget {
   final String video;
-  const VideoSent({super.key, required this.video});
+  const VideoRecieved({super.key, required this.video});
 
   @override
-  State<VideoSent> createState() => _VideoSentState();
+  State<VideoRecieved> createState() => _VideoRecievedState();
 }
 
-class _VideoSentState extends State<VideoSent> {
-  late final player = Player();
-  late final _controller = VideoController(player);
-
+class _VideoRecievedState extends State<VideoRecieved> {
+  late VideoPlayerController _controller;
   @override
   void initState() {
     super.initState();
-    player.open(Media(
-      '$serverURL/api/${widget.video}',
-      httpHeaders: {
-        'Foo': 'Bar',
-        'Accept': '*/*',
-      },
-    ));
+    _controller = VideoPlayerController.networkUrl(
+        Uri.parse('$serverURL/api/${widget.video}'))
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      });
   }
 
   @override
   void dispose() {
-    player.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -192,7 +188,7 @@ class _VideoSentState extends State<VideoSent> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(100),
@@ -210,24 +206,56 @@ class _VideoSentState extends State<VideoSent> {
             backGroundColor: const Color(0xffE7E7ED),
             margin: const EdgeInsets.only(top: 20),
             child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.7,
-                ),
-                child: SizedBox(child: Video(controller: _controller))))
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
+              child: _controller.value.isInitialized
+                  ? AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: GestureDetector(
+                          onTap: () {
+                            _controller.play();
+                          },
+                          child: VideoPlayer(_controller)),
+                    )
+                  : Container(),
+            ))
       ],
     );
   }
 }
 
-class VideoRecieved extends StatelessWidget {
-  final String image;
-  const VideoRecieved({super.key, required this.image});
+class VideoSent extends StatefulWidget {
+  final String video;
+  const VideoSent({super.key, required this.video});
+
+  @override
+  State<VideoSent> createState() => _VideoSentState();
+}
+
+class _VideoSentState extends State<VideoSent> {
+  late VideoPlayerController _controller;
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.networkUrl(
+        Uri.parse('$serverURL/api/${widget.video}'))
+      ..initialize().then((_) {
+        setState(() {});
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ChatBubble(
           clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
@@ -235,10 +263,20 @@ class VideoRecieved extends StatelessWidget {
           margin: const EdgeInsets.only(top: 20),
           backGroundColor: Colors.blue,
           child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              child: Image(image: NetworkImage("$serverURL/api/$image"))),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7,
+            ),
+            child: _controller.value.isInitialized
+                ? AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: GestureDetector(
+                        onTap: () {
+                          _controller.play();
+                        },
+                        child: VideoPlayer(_controller)),
+                  )
+                : Container(),
+          ),
         ),
         ClipRRect(
           borderRadius: BorderRadius.circular(100),

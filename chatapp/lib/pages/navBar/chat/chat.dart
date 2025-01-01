@@ -89,7 +89,8 @@ class _ConversationPageState extends State<ConversationPage> {
             child: ListView(
               children: messages.map((message) {
                 if (message['type'] == "MESSAGE") {
-                  if (message['_id'] == Provider.of<UserProvider>(context).id) {
+                  if (message['userId']['_id'] ==
+                      Provider.of<UserProvider>(context).id) {
                     return MessageSent(
                       message: message['message'],
                     );
@@ -99,7 +100,8 @@ class _ConversationPageState extends State<ConversationPage> {
                     );
                   }
                 } else if (message['type'] == "IMAGE") {
-                  if (message['_id'] == Provider.of<UserProvider>(context).id) {
+                  if (message['userId']['_id'] ==
+                      Provider.of<UserProvider>(context).id) {
                     return ImageSent(
                       image: message['message'],
                     );
@@ -109,13 +111,14 @@ class _ConversationPageState extends State<ConversationPage> {
                     );
                   }
                 } else if (message['type'] == "VIDEO") {
-                  if (message['_id'] == Provider.of<UserProvider>(context).id) {
+                  if (message['userId']['_id'] ==
+                      Provider.of<UserProvider>(context).id) {
                     return VideoSent(
                       video: message['message'],
                     );
                   } else {
                     return VideoRecieved(
-                      image: message['message'],
+                      video: message['message'],
                     );
                   }
                 } else {
