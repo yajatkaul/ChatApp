@@ -24,6 +24,7 @@ dependencies:
   provider: ^6.1.2
   path: ^1.8.3
   video_player: ^2.9.2
+  waveform_recorder: ^1.4.0
 
 dev_dependencies:
   flutter_test:
