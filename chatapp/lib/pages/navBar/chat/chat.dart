@@ -219,6 +219,20 @@ class _ConversationPageState extends State<ConversationPage> {
                   )
                 : TextField(
                     controller: _messageController,
+                    onTap: () {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (_scrollController.hasClients) {
+                          final bottomOffset =
+                              _scrollController.position.maxScrollExtent -
+                                  MediaQuery.of(context).viewInsets.bottom;
+                          _scrollController.animateTo(
+                            bottomOffset,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeOut,
+                          );
+                        }
+                      });
+                    },
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25)),
