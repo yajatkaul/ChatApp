@@ -46,10 +46,12 @@ class _ConversationPageState extends State<ConversationPage> {
     });
 
     socket.on("newMessage", (message) {
-      setState(() {
-        messages.add(message);
-      });
-      _scrollToBottom();
+      if (message['conversationId'] == widget.conversationId) {
+        setState(() {
+          messages.add(message);
+        });
+        _scrollToBottom();
+      }
     });
 
     // Connection error
@@ -127,7 +129,14 @@ class _ConversationPageState extends State<ConversationPage> {
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        double targetPosition = _scrollController.position.extentTotal;
+        if (_scrollController.position.pixels != targetPosition) {
+          _scrollController.animateTo(
+            targetPosition,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
       }
     });
   }
@@ -155,7 +164,7 @@ class _ConversationPageState extends State<ConversationPage> {
         children: [
           Expanded(
               child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.only(bottom: 8.0),
             child: ListView(
               controller: _scrollController,
               children: messages.map((message) {
@@ -212,7 +221,7 @@ class _ConversationPageState extends State<ConversationPage> {
             ),
           )),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 8),
+            padding: const EdgeInsets.only(bottom: 8, left: 4, right: 4),
             child: _waveController.isRecording
                 ? Container(
                     decoration: BoxDecoration(
