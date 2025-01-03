@@ -83,8 +83,11 @@ class ConversationTile extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    ConversationPage(conversationId: convoId)));
+                builder: (context) => ConversationPage(
+                      conversationId: convoId,
+                      profilePic: image,
+                      userName: name,
+                    )));
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),

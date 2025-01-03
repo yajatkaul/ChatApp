@@ -15,7 +15,13 @@ import 'package:waveform_recorder/waveform_recorder.dart';
 
 class ConversationPage extends StatefulWidget {
   final String conversationId;
-  const ConversationPage({super.key, required this.conversationId});
+  final String userName;
+  final String? profilePic;
+  const ConversationPage(
+      {super.key,
+      required this.conversationId,
+      required this.profilePic,
+      required this.userName});
 
   @override
   State<ConversationPage> createState() => _ConversationPageState();
@@ -129,7 +135,22 @@ class _ConversationPageState extends State<ConversationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(
+                widget.profilePic == null
+                    ? defaultImage
+                    : "$serverURL/api/${widget.profilePic}",
+              ),
+              radius: 16,
+            ),
+            const SizedBox(width: 8),
+            Text(widget.userName),
+          ],
+        ),
+      ),
       body: Column(
         children: [
           Expanded(
