@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:chatapp/components/message_bubbles.dart';
 import 'package:chatapp/pages/navBar/chat/hooks/chat_hooks.dart';
 import 'package:chatapp/providers/user_provider.dart';
@@ -33,11 +31,10 @@ class _ConversationPageState extends State<ConversationPage> {
     socket.connect();
 
     socket.onConnect((_) {
-      print('Connected to server');
+      debugPrint('Connected to server');
     });
 
     socket.on("newMessage", (message) {
-      print(message);
       setState(() {
         messages.add(message);
       });
@@ -45,12 +42,12 @@ class _ConversationPageState extends State<ConversationPage> {
 
     // Connection error
     socket.onConnectError((data) {
-      print('Connection error: $data');
+      debugPrint('Connection error: $data');
     });
 
     // Disconnect
     socket.onDisconnect((_) {
-      print('Disconnected from server');
+      debugPrint('Disconnected from server');
     });
   }
 
@@ -76,7 +73,7 @@ class _ConversationPageState extends State<ConversationPage> {
       try {
         ChatHooks().sendAsset(context, result, widget.conversationId);
       } catch (e) {
-        print('Error occurred while uploading assets: $e');
+        debugPrint('Error occurred while uploading assets: $e');
       }
     }
   }
@@ -101,6 +98,7 @@ class _ConversationPageState extends State<ConversationPage> {
     } else {
       final file = _waveController.file;
       if (file == null) return;
+      ChatHooks().sendVM(context, file, widget.conversationId);
     }
   }
 
@@ -159,6 +157,16 @@ class _ConversationPageState extends State<ConversationPage> {
                       video: message['message'],
                     );
                   }
+                } else if (message['type'] == "VOICE") {
+                  if (message['userId']['_id'] ==
+                      Provider.of<UserProvider>(context).id) {
+                    return VMSent(vm: message["message"]);
+                  } else {
+                    return VMRecieved(
+                      profilePic: message['userId']['profilePic'],
+                      vm: message['message'],
+                    );
+                  }
                 } else {
                   return const SizedBox();
                 }
@@ -199,8 +207,7 @@ class _ConversationPageState extends State<ConversationPage> {
                           borderRadius: BorderRadius.circular(25)),
                       hintText: 'Type a message',
                       suffixIcon: Row(
-                        mainAxisSize: MainAxisSize
-                            .min, // Ensures the row takes up minimal space
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             onPressed: _toggleRecording,

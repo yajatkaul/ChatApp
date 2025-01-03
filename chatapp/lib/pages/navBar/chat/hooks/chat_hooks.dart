@@ -6,6 +6,7 @@ import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -69,6 +70,30 @@ class ChatHooks {
             contentType: MediaType(type[0], type[1]));
         request.files.add(value);
       }
+
+      await request.send();
+    } catch (e) {
+      print('Error occurred while uploading assets: $e');
+    }
+  }
+
+  Future<void> sendVM(BuildContext context, XFile file, String convoId) async {
+    try {
+      final Uri url =
+          Uri.parse('$serverURL/api/dm/sendVM?conversationId=$convoId');
+
+      var request = http.MultipartRequest('POST', url);
+
+      request.headers['Cookie'] =
+          Provider.of<UserProvider>(context, listen: false).sessionCookie!;
+
+      var mimeTypeData = lookupMimeType(file.path);
+      var type = mimeTypeData!.split("/");
+
+      var value = await http.MultipartFile.fromPath('vm', file.path,
+          filename: path.basename(file.path),
+          contentType: MediaType(type[0], type[1]));
+      request.files.add(value);
 
       await request.send();
     } catch (e) {

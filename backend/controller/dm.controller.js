@@ -61,7 +61,10 @@ export const sendMessage = async (req, res) => {
 
     const populatedMessage = await newMessage.populate("userId");
 
-    const memberIds = conversation.members;
+    const memberIds = [
+      ...new Set(conversation.members.map((memberId) => memberId.toString())),
+    ];
+
     memberIds.forEach((memberId) => {
       const memberSocketId = userSocketMap[memberId.toString()];
       if (memberSocketId) {
@@ -104,7 +107,7 @@ export const sendAsset = async (req, res) => {
         type,
         message: asset.path,
       });
-   
+
       return newMessage
         .save()
         .then((savedMessage) => savedMessage.populate("userId"));
@@ -112,13 +115,52 @@ export const sendAsset = async (req, res) => {
 
     const populatedMessages = await Promise.all(promises);
 
-    const memberIds = conversation.members;
+    const memberIds = [
+      ...new Set(conversation.members.map((memberId) => memberId.toString())),
+    ];
     memberIds.forEach((memberId) => {
       const memberSocketId = userSocketMap[memberId.toString()];
       if (memberSocketId) {
         populatedMessages.forEach((message) => {
           io.to(memberSocketId).emit("newMessage", message);
         });
+      }
+    });
+
+    res.status(200).json({ result: "Success" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const sendVM = async (req, res) => {
+  try {
+    const vm = req.file;
+    const { conversationId } = req.query;
+
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found" });
+    }
+
+    const newMessage = new Message({
+      conversationId,
+      userId: req.session.userId,
+      type: "VOICE",
+      message: vm.path,
+    });
+
+    await newMessage.save();
+    const populatedMessage = newMessage.populate("userId");
+
+    const memberIds = [
+      ...new Set(conversation.members.map((memberId) => memberId.toString())),
+    ];
+    memberIds.forEach((memberId) => {
+      const memberSocketId = userSocketMap[memberId.toString()];
+      if (memberSocketId) {
+        io.to(memberSocketId).emit("newMessage", populatedMessage);
       }
     });
 
