@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chatapp/components/chat/image_message_bubble.dart';
 import 'package:chatapp/components/chat/message_bubbles.dart';
 import 'package:chatapp/components/chat/video_message_bubble.dart';
@@ -21,8 +23,8 @@ class ConversationPage extends StatefulWidget {
 
 class _ConversationPageState extends State<ConversationPage> {
   List<dynamic> messages = [];
-
   final _messageController = TextEditingController();
+  final _scrollController = ScrollController();
 
   Future<void> _socketConnection() async {
     IO.Socket socket = IO.io(
@@ -38,6 +40,7 @@ class _ConversationPageState extends State<ConversationPage> {
     });
 
     socket.on("newMessage", (message) {
+      _scrollToBottom();
       setState(() {
         messages.add(message);
       });
@@ -60,12 +63,14 @@ class _ConversationPageState extends State<ConversationPage> {
     _socketConnection();
     messages = await ChatHooks().getMessages(context, widget.conversationId);
     setState(() {});
+    _scrollToBottom();
   }
 
   @override
   void dispose() {
     _messageController.dispose();
     _waveController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -113,6 +118,14 @@ class _ConversationPageState extends State<ConversationPage> {
     setState(() {});
   }
 
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,6 +136,7 @@ class _ConversationPageState extends State<ConversationPage> {
               child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ListView(
+              controller: _scrollController,
               children: messages.map((message) {
                 if (message['type'] == "MESSAGE") {
                   if (message['userId']['_id'] ==
@@ -226,6 +240,9 @@ class _ConversationPageState extends State<ConversationPage> {
                           ),
                           IconButton(
                             onPressed: () {
+                              if (_messageController.text == "") {
+                                return;
+                              }
                               ChatHooks().sendMessages(context,
                                   widget.conversationId, _messageController);
                             },
