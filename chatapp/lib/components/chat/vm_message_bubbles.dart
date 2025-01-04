@@ -49,8 +49,8 @@ class VMSent extends StatelessWidget {
           ClipRRect(
               borderRadius: BorderRadius.circular(100),
               child: SizedBox(
-                height: 50,
-                width: 50,
+                height: 40,
+                width: 40,
                 child: Image.network(
                   Provider.of<UserProvider>(context).profilePic == null
                       ? defaultImage
@@ -82,8 +82,8 @@ class VMRecieved extends StatelessWidget {
           ClipRRect(
               borderRadius: BorderRadius.circular(100),
               child: SizedBox(
-                height: 50,
-                width: 50,
+                height: 40,
+                width: 40,
                 child: Image.network(
                   profilePic == null ? defaultImage : profilePic!,
                   width: 40,

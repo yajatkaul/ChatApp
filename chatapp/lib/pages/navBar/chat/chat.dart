@@ -164,7 +164,7 @@ class _ConversationPageState extends State<ConversationPage> {
         children: [
           Expanded(
               child: Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
+            padding: const EdgeInsets.only(right: 8.0, bottom: 1, left: 8.0),
             child: ListView(
               controller: _scrollController,
               children: messages.map((message) {
@@ -221,7 +221,7 @@ class _ConversationPageState extends State<ConversationPage> {
             ),
           )),
           Padding(
-            padding: const EdgeInsets.only(bottom: 8, left: 4, right: 4),
+            padding: const EdgeInsets.only(bottom: 8, left: 4, right: 8),
             child: _waveController.isRecording
                 ? Container(
                     decoration: BoxDecoration(
