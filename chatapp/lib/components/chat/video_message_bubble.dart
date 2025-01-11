@@ -53,25 +53,28 @@ class _VideoSentState extends State<VideoSent> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(25),
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
+            child: SizedBox(
+              height: 200,
+              width: 200,
               child: _controller.value.isInitialized
-                  ? AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: GestureDetector(
-                        onTap: _showVideoOverlay,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            VideoPlayer(_controller),
-                            Icon(
-                              Icons.play_circle_outline,
-                              size: 50,
-                              color: Colors.white.withValues(),
-                            ),
-                          ],
+                  ? SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: GestureDetector(
+                          onTap: _showVideoOverlay,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              VideoPlayer(_controller),
+                              Icon(
+                                Icons.play_circle_outline,
+                                size: 50,
+                                color: Colors.white.withValues(),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     )
@@ -160,27 +163,30 @@ class _VideoRecievedState extends State<VideoRecieved> {
           ),
           ClipRRect(
             borderRadius: BorderRadius.circular(25),
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
+            child: SizedBox(
+              width: 200,
+              height: 200,
               child: _controller.value.isInitialized
-                  ? AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: GestureDetector(
-                        onTap: () {
-                          _showVideoOverlay();
-                        },
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            VideoPlayer(_controller),
-                            Icon(
-                              Icons.play_circle_outline,
-                              size: 50,
-                              color: Colors.white.withValues(),
-                            ),
-                          ],
+                  ? SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: GestureDetector(
+                          onTap: () {
+                            _showVideoOverlay();
+                          },
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              VideoPlayer(_controller),
+                              Icon(
+                                Icons.play_circle_outline,
+                                size: 50,
+                                color: Colors.white.withValues(),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     )

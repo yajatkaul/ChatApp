@@ -33,11 +33,13 @@ class ImageSent extends StatelessWidget {
             onTap: () => _showFullscreenImage(context),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(25),
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+              child: SizedBox(
+                width: 200,
+                height: 200,
+                child: Image(
+                  image: NetworkImage("$serverURL/api/$image"),
+                  fit: BoxFit.cover,
                 ),
-                child: Image(image: NetworkImage("$serverURL/api/$image")),
               ),
             ),
           ),
@@ -100,15 +102,21 @@ class ImageReceived extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          GestureDetector(
-            onTap: () => _showFullscreenImage(context),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(25),
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+          SizedBox(
+            width: 200,
+            height: 200,
+            child: GestureDetector(
+              onTap: () => _showFullscreenImage(context),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(25),
+                child: SizedBox(
+                  height: 200,
+                  width: 200,
+                  child: Image(
+                    image: NetworkImage("$serverURL/api/$image"),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                child: Image(image: NetworkImage("$serverURL/api/$image")),
               ),
             ),
           ),
