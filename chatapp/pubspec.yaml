@@ -26,6 +26,7 @@ dependencies:
   video_player: ^2.9.2
   waveform_recorder: ^1.4.0
   voice_message_package: ^2.2.1
+  flutter_markdown: ^0.7.5
 
 dev_dependencies:
   flutter_test:
