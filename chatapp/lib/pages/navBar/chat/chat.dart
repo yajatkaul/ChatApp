@@ -31,21 +31,22 @@ class _ConversationPageState extends State<ConversationPage> {
   List<dynamic> messages = [];
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
+  IO.Socket? socket;
 
   Future<void> _socketConnection() async {
-    IO.Socket socket = IO.io(
+    socket = IO.io(
         serverURL,
         IO.OptionBuilder().setTransports(['websocket']).setQuery({
           'userId': Provider.of<UserProvider>(context, listen: false).id
         }).build());
 
-    socket.connect();
+    socket!.connect();
 
-    socket.onConnect((_) {
+    socket!.onConnect((_) {
       debugPrint('Connected to server');
     });
 
-    socket.on("newMessage", (message) {
+    socket!.on("newMessage", (message) {
       if (message['conversationId'] == widget.conversationId) {
         setState(() {
           messages.add(message);
@@ -55,12 +56,14 @@ class _ConversationPageState extends State<ConversationPage> {
     });
 
     // Connection error
-    socket.onConnectError((data) {
+    socket!.onConnectError((data) {
+      _socketConnection();
       debugPrint('Connection error: $data');
     });
 
     // Disconnect
-    socket.onDisconnect((_) {
+    socket!.onDisconnect((_) {
+      socket!.dispose();
       debugPrint('Disconnected from server');
     });
   }
@@ -79,6 +82,7 @@ class _ConversationPageState extends State<ConversationPage> {
     _messageController.dispose();
     _waveController.dispose();
     _scrollController.dispose();
+    socket?.dispose();
     super.dispose();
   }
 
