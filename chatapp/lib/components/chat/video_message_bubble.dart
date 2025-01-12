@@ -186,7 +186,9 @@ class _VideoRecievedState extends State<VideoRecieved> {
                 height: 40,
                 width: 40,
                 child: Image.network(
-                  widget.profilePic == null ? defaultImage : widget.profilePic!,
+                  widget.profilePic == null
+                      ? defaultImage
+                      : '$serverURL/api/${widget.profilePic}',
                   width: 40,
                   height: 40,
                   fit: BoxFit.cover,

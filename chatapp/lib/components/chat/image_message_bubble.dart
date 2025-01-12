@@ -124,7 +124,9 @@ class ImageReceived extends StatelessWidget {
               height: 40,
               width: 40,
               child: Image.network(
-                profilePic ?? defaultImage,
+                profilePic != null
+                    ? '$serverURL/api/$profilePic'
+                    : defaultImage,
                 width: 40,
                 height: 40,
                 fit: BoxFit.cover,

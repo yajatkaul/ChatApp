@@ -304,7 +304,9 @@ class MessageRecieved extends StatelessWidget {
                 height: 40,
                 width: 40,
                 child: Image.network(
-                  profilePic == null ? defaultImage : profilePic!,
+                  profilePic == null
+                      ? defaultImage
+                      : '$serverURL/api/$profilePic',
                   width: 40,
                   height: 40,
                   fit: BoxFit.cover,
@@ -410,7 +412,9 @@ class MessageRecieved extends StatelessWidget {
                 height: 40,
                 width: 40,
                 child: Image.network(
-                  profilePic == null ? defaultImage : profilePic!,
+                  profilePic == null
+                      ? defaultImage
+                      : '$serverURL/api/$profilePic',
                   width: 40,
                   height: 40,
                   fit: BoxFit.cover,
