@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chatapp/pages/navBar/chat/hooks/chat_hooks.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,13 @@ import 'package:video_player/video_player.dart';
 
 class VideoSent extends StatefulWidget {
   final String video;
-  const VideoSent({super.key, required this.video});
+  final String convoId;
+  final String messageId;
+  const VideoSent(
+      {super.key,
+      required this.video,
+      required this.convoId,
+      required this.messageId});
 
   @override
   State<VideoSent> createState() => _VideoSentState();
@@ -63,6 +70,33 @@ class _VideoSentState extends State<VideoSent> {
                       child: AspectRatio(
                         aspectRatio: _controller.value.aspectRatio,
                         child: GestureDetector(
+                          onLongPress: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Message Options"),
+                                  content: SizedBox(
+                                    height: 50,
+                                    child: Column(
+                                      children: [
+                                        TextButton(
+                                            onPressed: () async {
+                                              await ChatHooks().deleteMessage(
+                                                  context,
+                                                  widget.messageId,
+                                                  widget.convoId);
+                                              Navigator.of(context).pop();
+                                            },
+                                            child:
+                                                const Text("Unsend Message")),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                           onTap: _showVideoOverlay,
                           child: Stack(
                             alignment: Alignment.center,

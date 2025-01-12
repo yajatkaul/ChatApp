@@ -73,7 +73,7 @@ class ChatHooks {
 
       await request.send();
     } catch (e) {
-      print('Error occurred while uploading assets: $e');
+      debugPrint('Error occurred while uploading assets: $e');
     }
   }
 
@@ -97,7 +97,32 @@ class ChatHooks {
 
       await request.send();
     } catch (e) {
-      print('Error occurred while uploading assets: $e');
+      debugPrint('Error occurred while uploading assets: $e');
+    }
+  }
+
+  Future<void> deleteMessage(
+      BuildContext context, String messageId, String convoId) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            '$serverURL/api/dm/deleteMessage?messageId=$messageId&convoId=$convoId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Cookie':
+              Provider.of<UserProvider>(context, listen: false).sessionCookie!,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Message Deleted"),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error occurred while uploading assets: $e');
     }
   }
 }

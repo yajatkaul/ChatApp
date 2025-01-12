@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createDM,
+  deleteMessage,
   getConversations,
   getMessage,
   getUsersForNewMessage,
@@ -17,6 +18,8 @@ router.get("/getUsersForMessage", getUsersForNewMessage);
 router.get("/getConversations", getConversations);
 
 router.post("/sendMessage", sendMessage);
+router.get("/deleteMessage", deleteMessage);
+
 router.post("/sendAsset", upload.array("assets", 20), sendAsset);
 router.post("/sendVM", upload.single("vm"), sendVM);
 

@@ -1,3 +1,4 @@
+import 'package:chatapp/pages/navBar/chat/hooks/chat_hooks.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,13 @@ import 'package:voice_message_package/voice_message_package.dart';
 
 class VMSent extends StatelessWidget {
   final String vm;
-  const VMSent({super.key, required this.vm});
+  final String convoId;
+  final String messageId;
+  const VMSent(
+      {super.key,
+      required this.vm,
+      required this.convoId,
+      required this.messageId});
 
   @override
   Widget build(BuildContext context) {
@@ -16,33 +23,59 @@ class VMSent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              child: VoiceMessageView(
-                circlesColor: Colors.blue,
-                activeSliderColor: Colors.blue,
-                controller: VoiceController(
-                  audioSrc: '$serverURL/api/$vm',
-                  onComplete: () {
-                    /// do something on complete
-                  },
-                  onPause: () {
-                    /// do something on pause
-                  },
-                  onPlaying: () {
-                    /// do something on playing
-                  },
-                  onError: (err) {
-                    /// do somethin on error
-                  },
-                  maxDuration: const Duration(seconds: 5000),
-                  isFile: false,
+          GestureDetector(
+            onLongPress: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Message Options"),
+                    content: SizedBox(
+                      height: 50,
+                      child: Column(
+                        children: [
+                          TextButton(
+                              onPressed: () async {
+                                await ChatHooks()
+                                    .deleteMessage(context, messageId, convoId);
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Unsend Message")),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
                 ),
-                innerPadding: 12,
-                cornerRadius: 20,
-              )),
+                child: VoiceMessageView(
+                  circlesColor: Colors.blue,
+                  activeSliderColor: Colors.blue,
+                  controller: VoiceController(
+                    audioSrc: '$serverURL/api/$vm',
+                    onComplete: () {
+                      /// do something on complete
+                    },
+                    onPause: () {
+                      /// do something on pause
+                    },
+                    onPlaying: () {
+                      /// do something on playing
+                    },
+                    onError: (err) {
+                      /// do somethin on error
+                    },
+                    maxDuration: const Duration(seconds: 5000),
+                    isFile: false,
+                  ),
+                  innerPadding: 12,
+                  cornerRadius: 20,
+                )),
+          ),
           const SizedBox(
             width: 10,
           ),

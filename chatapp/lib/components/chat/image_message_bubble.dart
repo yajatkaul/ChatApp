@@ -1,14 +1,20 @@
 import 'dart:async';
 
+import 'package:chatapp/pages/navBar/chat/hooks/chat_hooks.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class ImageSent extends StatelessWidget {
   final String image;
-  const ImageSent({super.key, required this.image});
+  final String convoId;
+  final String messageId;
+  const ImageSent(
+      {super.key,
+      required this.image,
+      required this.convoId,
+      required this.messageId});
 
   void _showFullscreenImage(BuildContext context) {
     Navigator.of(context).push(
@@ -31,6 +37,30 @@ class ImageSent extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () => _showFullscreenImage(context),
+            onLongPress: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Message Options"),
+                    content: SizedBox(
+                      height: 50,
+                      child: Column(
+                        children: [
+                          TextButton(
+                              onPressed: () async {
+                                await ChatHooks()
+                                    .deleteMessage(context, messageId, convoId);
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Unsend Message")),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(25),
               child: SizedBox(

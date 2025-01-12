@@ -55,6 +55,19 @@ class _ConversationPageState extends State<ConversationPage> {
       }
     });
 
+    socket!.on("deleteMessage", (message) {
+      if (message['convoId'] == widget.conversationId) {
+        int indexToRemove = messages.indexWhere(
+            (chatMessage) => chatMessage['_id'] == message['messageId']);
+
+        if (indexToRemove != -1) {
+          setState(() {
+            messages.removeAt(indexToRemove);
+          });
+        }
+      }
+    });
+
     // Connection error
     socket!.onConnectError((data) {
       _socketConnection();
@@ -176,6 +189,8 @@ class _ConversationPageState extends State<ConversationPage> {
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
                     return MessageSent(
+                      convoId: widget.conversationId,
+                      messageId: message['_id'],
                       message: message['message'],
                     );
                   } else {
@@ -188,6 +203,8 @@ class _ConversationPageState extends State<ConversationPage> {
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
                     return ImageSent(
+                      messageId: message['_id'],
+                      convoId: widget.conversationId,
                       image: message['message'],
                     );
                   } else {
@@ -200,6 +217,8 @@ class _ConversationPageState extends State<ConversationPage> {
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
                     return VideoSent(
+                      convoId: widget.conversationId,
+                      messageId: message['_id'],
                       video: message['message'],
                     );
                   } else {
@@ -211,7 +230,11 @@ class _ConversationPageState extends State<ConversationPage> {
                 } else if (message['type'] == "VOICE") {
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
-                    return VMSent(vm: message["message"]);
+                    return VMSent(
+                      vm: message["message"],
+                      messageId: message['_id'],
+                      convoId: widget.conversationId,
+                    );
                   } else {
                     return VMRecieved(
                       profilePic: message['userId']['profilePic'],

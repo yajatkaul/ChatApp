@@ -211,3 +211,35 @@ export const createDM = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const deleteMessage = async (req, res) => {
+  try {
+    const { messageId, convoId } = req.query;
+
+    const message = await Message.findById(messageId);
+
+    if (message.userId.toString() !== req.session.userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    await Message.findByIdAndDelete(messageId);
+
+    const conversation = await Conversation.findById(convoId);
+
+    const memberIds = [
+      ...new Set(conversation.members.map((memberId) => memberId.toString())),
+    ];
+
+    memberIds.forEach((memberId) => {
+      const memberSocketId = userSocketMap[memberId.toString()];
+      if (memberSocketId) {
+        io.to(memberSocketId).emit("deleteMessage", { messageId, convoId });
+      }
+    });
+
+    res.status(200).json({ result: "Success" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
