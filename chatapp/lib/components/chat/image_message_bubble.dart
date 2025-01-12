@@ -149,7 +149,7 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
     super.initState();
     _startHideControlsTimer();
     // Enable full screen and hide system UI
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    //SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   }
 
   @override
@@ -157,7 +157,7 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
     _controller.dispose();
     _hideControlsTimer?.cancel();
     // Restore system UI
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    //SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 

@@ -218,8 +218,7 @@ class MessageRecieved extends StatelessWidget {
                       onTapLink: (text, href, title) =>
                           launchUrl(Uri.parse(href!)),
                       styleSheet: MarkdownStyleSheet(
-                          a: const TextStyle(
-                              color: Color.fromARGB(255, 179, 202, 243))),
+                          a: const TextStyle(color: Colors.blue)),
                     ),
                   ],
                 ),
