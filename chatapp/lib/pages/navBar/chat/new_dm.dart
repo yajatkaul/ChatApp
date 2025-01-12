@@ -55,8 +55,8 @@ class _NewDMState extends State<NewDM> {
                       MaterialPageRoute(
                           builder: (context) => ConversationPage(
                                 conversationId: responseBody['id'],
-                                userName: responseBody["userName"],
-                                profilePic: responseBody["profilePic"],
+                                userName: user["userName"],
+                                profilePic: user["profilePic"],
                               )));
                 } else {
                   print(response.body);
