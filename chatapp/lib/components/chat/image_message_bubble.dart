@@ -4,6 +4,7 @@ import 'package:chatapp/pages/navBar/chat/hooks/chat_hooks.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_download_manager/flutter_download_manager.dart';
 import 'package:provider/provider.dart';
 
 class ImageSent extends StatelessWidget {
@@ -44,8 +45,9 @@ class ImageSent extends StatelessWidget {
                   return AlertDialog(
                     title: const Text("Message Options"),
                     content: SizedBox(
-                      height: 50,
+                      height: 100,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           TextButton(
                               onPressed: () async {
@@ -54,6 +56,24 @@ class ImageSent extends StatelessWidget {
                                 Navigator.of(context).pop();
                               },
                               child: const Text("Unsend Message")),
+                          TextButton(
+                              onPressed: () async {
+                                final url = '$serverURL/api/$image';
+                                final dl = DownloadManager();
+                                dl.addDownload(url,
+                                    "$androidDownloadLocation/${dl.getFileNameFromUrl(url)}");
+
+                                DownloadTask? task = dl.getDownload(url);
+
+                                await task?.whenDownloadComplete();
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Downloaded")));
+
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Download")),
                         ],
                       ),
                     ),
@@ -139,6 +159,42 @@ class ImageReceived extends StatelessWidget {
             height: 200,
             child: GestureDetector(
               onTap: () => _showFullscreenImage(context),
+              onLongPress: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Message Options"),
+                      content: SizedBox(
+                        height: 50,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            TextButton(
+                                onPressed: () async {
+                                  final url = '$serverURL/api/$image';
+                                  final dl = DownloadManager();
+                                  dl.addDownload(url,
+                                      "$androidDownloadLocation/${dl.getFileNameFromUrl(url)}");
+
+                                  DownloadTask? task = dl.getDownload(url);
+
+                                  await task?.whenDownloadComplete();
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text("Downloaded")));
+
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text("Download")),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(25),
                 child: SizedBox(

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_download_manager/flutter_download_manager.dart';
 
 class VideoSent extends StatefulWidget {
   final String video;
@@ -77,8 +78,10 @@ class _VideoSentState extends State<VideoSent> {
                                 return AlertDialog(
                                   title: const Text("Message Options"),
                                   content: SizedBox(
-                                    height: 50,
+                                    height: 100,
                                     child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       children: [
                                         TextButton(
                                             onPressed: () async {
@@ -90,6 +93,28 @@ class _VideoSentState extends State<VideoSent> {
                                             },
                                             child:
                                                 const Text("Unsend Message")),
+                                        TextButton(
+                                            onPressed: () async {
+                                              final url =
+                                                  '$serverURL/api/${widget.video}';
+                                              final dl = DownloadManager();
+                                              dl.addDownload(url,
+                                                  "$androidDownloadLocation/${dl.getFileNameFromUrl(url)}");
+
+                                              DownloadTask? task =
+                                                  dl.getDownload(url);
+
+                                              await task
+                                                  ?.whenDownloadComplete();
+
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content:
+                                                          Text("Downloaded")));
+
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text("Download")),
                                       ],
                                     ),
                                   ),
@@ -211,6 +236,47 @@ class _VideoRecievedState extends State<VideoRecieved> {
                         child: GestureDetector(
                           onTap: () {
                             _showVideoOverlay();
+                          },
+                          onLongPress: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Message Options"),
+                                  content: SizedBox(
+                                    height: 50,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        TextButton(
+                                            onPressed: () async {
+                                              final url =
+                                                  '$serverURL/api/${widget.video}';
+                                              final dl = DownloadManager();
+                                              dl.addDownload(url,
+                                                  "$androidDownloadLocation/${dl.getFileNameFromUrl(url)}");
+
+                                              DownloadTask? task =
+                                                  dl.getDownload(url);
+
+                                              await task
+                                                  ?.whenDownloadComplete();
+
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content:
+                                                          Text("Downloaded")));
+
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text("Download")),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
                           },
                           child: Stack(
                             alignment: Alignment.center,

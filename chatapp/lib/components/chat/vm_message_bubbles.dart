@@ -2,6 +2,7 @@ import 'package:chatapp/pages/navBar/chat/hooks/chat_hooks.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_download_manager/flutter_download_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:voice_message_package/voice_message_package.dart';
 
@@ -31,8 +32,9 @@ class VMSent extends StatelessWidget {
                   return AlertDialog(
                     title: const Text("Message Options"),
                     content: SizedBox(
-                      height: 50,
+                      height: 100,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           TextButton(
                               onPressed: () async {
@@ -41,6 +43,24 @@ class VMSent extends StatelessWidget {
                                 Navigator.of(context).pop();
                               },
                               child: const Text("Unsend Message")),
+                          TextButton(
+                              onPressed: () async {
+                                final url = '$serverURL/api/$vm';
+                                final dl = DownloadManager();
+                                dl.addDownload(url,
+                                    "$androidDownloadLocation/${dl.getFileNameFromUrl(url)}");
+
+                                DownloadTask? task = dl.getDownload(url);
+
+                                await task?.whenDownloadComplete();
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Downloaded")));
+
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Download")),
                         ],
                       ),
                     ),
@@ -129,33 +149,71 @@ class VMRecieved extends StatelessWidget {
           const SizedBox(
             width: 10,
           ),
-          Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              child: VoiceMessageView(
-                circlesColor: Colors.black,
-                activeSliderColor: Colors.black,
-                controller: VoiceController(
-                  audioSrc: '$serverURL/api/$vm',
-                  onComplete: () {
-                    /// do something on complete
-                  },
-                  onPause: () {
-                    /// do something on pause
-                  },
-                  onPlaying: () {
-                    /// do something on playing
-                  },
-                  onError: (err) {
-                    /// do somethin on error
-                  },
-                  maxDuration: const Duration(seconds: 5000),
-                  isFile: false,
+          GestureDetector(
+            onLongPress: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text("Message Options"),
+                    content: SizedBox(
+                      height: 50,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextButton(
+                              onPressed: () async {
+                                final url = '$serverURL/api/$vm';
+                                final dl = DownloadManager();
+                                dl.addDownload(url,
+                                    "$androidDownloadLocation/${dl.getFileNameFromUrl(url)}");
+
+                                DownloadTask? task = dl.getDownload(url);
+
+                                await task?.whenDownloadComplete();
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Downloaded")));
+
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Download")),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
                 ),
-                innerPadding: 12,
-                cornerRadius: 20,
-              )),
+                child: VoiceMessageView(
+                  circlesColor: Colors.black,
+                  activeSliderColor: Colors.black,
+                  controller: VoiceController(
+                    audioSrc: '$serverURL/api/$vm',
+                    onComplete: () {
+                      /// do something on complete
+                    },
+                    onPause: () {
+                      /// do something on pause
+                    },
+                    onPlaying: () {
+                      /// do something on playing
+                    },
+                    onError: (err) {
+                      /// do somethin on error
+                    },
+                    maxDuration: const Duration(seconds: 5000),
+                    isFile: false,
+                  ),
+                  innerPadding: 12,
+                  cornerRadius: 20,
+                )),
+          ),
         ],
       ),
     );

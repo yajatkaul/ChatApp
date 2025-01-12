@@ -10,6 +10,39 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:markdown/markdown.dart' as md;
 
+Widget _getAlertMine(
+    BuildContext context, String message, String messageId, String convoId) {
+  return AlertDialog(
+    title: const Text("Message Options"),
+    content: SizedBox(
+      height: 150,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextButton(
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: message));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Copied Message"),
+                  ),
+                );
+                Navigator.of(context).pop();
+              },
+              child: const Text("Copy Message")),
+          TextButton(onPressed: () {}, child: const Text("Edit Message")),
+          TextButton(
+              onPressed: () async {
+                await ChatHooks().deleteMessage(context, messageId, convoId);
+                Navigator.of(context).pop();
+              },
+              child: const Text("Unsend Message")),
+        ],
+      ),
+    ),
+  );
+}
+
 class MessageSent extends StatelessWidget {
   final String convoId;
   final String messageId;
@@ -40,38 +73,7 @@ class MessageSent extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Message Options"),
-                      content: SizedBox(
-                        height: 150,
-                        child: Column(
-                          children: [
-                            TextButton(
-                                onPressed: () {
-                                  Clipboard.setData(
-                                      ClipboardData(text: message));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("Copied Message"),
-                                    ),
-                                  );
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("Copy Message")),
-                            TextButton(
-                                onPressed: () {},
-                                child: const Text("Edit Message")),
-                            TextButton(
-                                onPressed: () async {
-                                  await ChatHooks().deleteMessage(
-                                      context, messageId, convoId);
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("Unsend Message")),
-                          ],
-                        ),
-                      ),
-                    );
+                    return _getAlertMine(context, message, messageId, convoId);
                   },
                 );
               },
@@ -162,37 +164,7 @@ class MessageSent extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text("Message Options"),
-                    content: SizedBox(
-                      height: 150,
-                      child: Column(
-                        children: [
-                          TextButton(
-                              onPressed: () {
-                                Clipboard.setData(ClipboardData(text: message));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Copied Message"),
-                                  ),
-                                );
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Copy Message")),
-                          TextButton(
-                              onPressed: () {},
-                              child: const Text("Edit Message")),
-                          TextButton(
-                              onPressed: () async {
-                                await ChatHooks()
-                                    .deleteMessage(context, messageId, convoId);
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Unsend Message")),
-                        ],
-                      ),
-                    ),
-                  );
+                  return _getAlertMine(context, message, messageId, convoId);
                 },
               );
             },
@@ -243,44 +215,29 @@ class MessageSent extends StatelessWidget {
   }
 }
 
-class CodeBuilder extends MarkdownElementBuilder {
-  final BuildContext context;
-
-  CodeBuilder(this.context);
-
-  @override
-  Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
-    return Material(
-      // Wrap with Material to handle tap properly
-      color: Colors.transparent,
-      child: InkWell(
-        // Using InkWell instead of GestureDetector
-        onTap: () {
-          final String codeText = element.textContent;
-          Clipboard.setData(ClipboardData(text: codeText)).then((_) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Code copied to clipboard')),
-            );
-          });
-        },
-        borderRadius: BorderRadius.circular(4),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.grey[850],
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            element.textContent,
-            style: const TextStyle(
-              fontFamily: 'monospace',
-              color: Colors.white,
-            ),
-          ),
-        ),
+Widget _getAlertOther(BuildContext context, String message) {
+  return AlertDialog(
+    title: const Text("Message Options"),
+    content: SizedBox(
+      height: 50,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextButton(
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: message));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Copied Message"),
+                  ),
+                );
+                Navigator.of(context).pop();
+              },
+              child: const Text("Copy Message")),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
 class MessageRecieved extends StatelessWidget {
@@ -322,32 +279,10 @@ class MessageRecieved extends StatelessWidget {
               behavior: HitTestBehavior.translucent,
               onLongPress: () {
                 showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Message Options"),
-                      content: SizedBox(
-                        height: 50,
-                        child: Column(
-                          children: [
-                            TextButton(
-                                onPressed: () {
-                                  Clipboard.setData(
-                                      ClipboardData(text: message));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("Copied Message"),
-                                    ),
-                                  );
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("Copy Message")),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
+                    context: context,
+                    builder: (BuildContext context) {
+                      return _getAlertOther(context, message);
+                    });
               },
               child: ChatBubble(
                 clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
@@ -432,31 +367,10 @@ class MessageRecieved extends StatelessWidget {
             behavior: HitTestBehavior.translucent,
             onLongPress: () {
               showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text("Message Options"),
-                    content: SizedBox(
-                      height: 50,
-                      child: Column(
-                        children: [
-                          TextButton(
-                              onPressed: () {
-                                Clipboard.setData(ClipboardData(text: message));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Copied Message"),
-                                  ),
-                                );
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Copy Message")),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
+                  context: context,
+                  builder: (BuildContext context) {
+                    return _getAlertOther(context, message);
+                  });
             },
             child: ChatBubble(
               clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
@@ -484,5 +398,45 @@ class MessageRecieved extends StatelessWidget {
         ],
       );
     }
+  }
+}
+
+class CodeBuilder extends MarkdownElementBuilder {
+  final BuildContext context;
+
+  CodeBuilder(this.context);
+
+  @override
+  Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
+    return Material(
+      // Wrap with Material to handle tap properly
+      color: Colors.transparent,
+      child: InkWell(
+        // Using InkWell instead of GestureDetector
+        onTap: () {
+          final String codeText = element.textContent;
+          Clipboard.setData(ClipboardData(text: codeText)).then((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Code copied to clipboard')),
+            );
+          });
+        },
+        borderRadius: BorderRadius.circular(4),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.grey[850],
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            element.textContent,
+            style: const TextStyle(
+              fontFamily: 'monospace',
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
