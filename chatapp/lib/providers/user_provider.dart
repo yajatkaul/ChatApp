@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class UserProvider extends ChangeNotifier {
   String? id;
-  String? displayName;
+  String displayName = "Name";
   String? profilePic;
   String? sessionCookie;
 
@@ -31,7 +31,7 @@ class UserProvider extends ChangeNotifier {
     );
 
     id = null;
-    displayName = null;
+    displayName = "Name";
     profilePic = null;
     sessionCookie = null;
     notifyListeners();

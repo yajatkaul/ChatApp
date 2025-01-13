@@ -62,9 +62,8 @@ class _NewDMState extends State<NewDM> {
                   debugPrint(response.body);
                 }
               },
-              style: ButtonStyle(
-                  shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)))),
+              style: const ButtonStyle(
+                  shape: WidgetStatePropertyAll(RoundedRectangleBorder())),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(

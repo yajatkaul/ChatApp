@@ -188,7 +188,7 @@ export const sendVM = async (req, res) => {
     });
 
     await newMessage.save();
-    const populatedMessage = newMessage.populate("userId");
+    const populatedMessage = await newMessage.populate("userId");
 
     const memberIds = [
       ...new Set(conversation.members.map((memberId) => memberId.toString())),

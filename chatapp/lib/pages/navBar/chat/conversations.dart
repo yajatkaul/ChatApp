@@ -42,13 +42,10 @@ class _ChatState extends State<Chat> {
           children: [
             ...conversations.map((conversation) {
               if (conversation['type'] == 'DM') {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: ConversationTile(
-                    name: conversation['members'][0]['displayName'],
-                    image: conversation['members'][0]['profilePic'],
-                    convoId: conversation['_id'],
-                  ),
+                return ConversationTile(
+                  name: conversation['members'][0]['displayName'],
+                  image: conversation['members'][0]['profilePic'],
+                  convoId: conversation['_id'],
                 );
               } else {
                 return Padding(
@@ -79,6 +76,8 @@ class ConversationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      style: const ButtonStyle(
+          shape: WidgetStatePropertyAll(RoundedRectangleBorder())),
       onPressed: () {
         Navigator.push(
             context,
