@@ -26,7 +26,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.didChangeDependencies();
     final displayName =
         Provider.of<UserProvider>(context, listen: false).displayName;
-    if (displayName != null) {
+    if (displayName != 'Name') {
       _displayNameController.text = displayName;
     }
   }
