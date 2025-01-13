@@ -30,7 +30,7 @@ class UpdateUser {
         'displayName': displayName,
       }),
     );
-    print(response.statusCode);
+
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
       showToast(responseBody['result'], true, context);
@@ -65,7 +65,7 @@ class UpdateUser {
     try {
       await request.send();
     } catch (e) {
-      print('Error occurred while uploading image: $e');
+      debugPrint('Error occurred while uploading image: $e');
     }
   }
 }

@@ -79,6 +79,42 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+export const sendLocation = async (req, res) => {
+  try {
+    const { message } = req.body;
+    const { conversationId } = req.query;
+
+    const conversation = await Conversation.findById(conversationId);
+
+    const newMessage = new Message({
+      conversationId,
+      userId: req.session.userId,
+      message,
+      type: "MAP",
+    });
+
+    await newMessage.save();
+
+    const populatedMessage = await newMessage.populate("userId");
+
+    const memberIds = [
+      ...new Set(conversation.members.map((memberId) => memberId.toString())),
+    ];
+
+    memberIds.forEach((memberId) => {
+      const memberSocketId = userSocketMap[memberId.toString()];
+      if (memberSocketId) {
+        io.to(memberSocketId).emit("newMessage", populatedMessage);
+      }
+    });
+
+    res.status(200).json({ result: "Success" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const sendAsset = async (req, res) => {
   try {
     const assets = req.files;

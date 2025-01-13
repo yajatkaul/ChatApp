@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart' as path;
+import 'package:geolocator/geolocator.dart';
 
 class ChatHooks {
   Future<List<dynamic>> getMessages(
@@ -123,6 +124,42 @@ class ChatHooks {
       }
     } catch (e) {
       debugPrint('Error occurred while uploading assets: $e');
+    }
+  }
+
+  Future<void> sendLocation(BuildContext context, String convoId) async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return;
+    }
+
+    Position location = await Geolocator.getCurrentPosition();
+
+    final response = await http.post(
+        Uri.parse('$serverURL/api/dm/sendLocation?conversationId=$convoId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Cookie':
+              Provider.of<UserProvider>(context, listen: false).sessionCookie!,
+        },
+        body: jsonEncode(
+            {"message": '${location.latitude},${location.longitude}'}));
+
+    if (response.statusCode == 200) {
+      Navigator.pop(context);
     }
   }
 }

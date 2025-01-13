@@ -1,14 +1,16 @@
 import 'dart:async';
 
 import 'package:chatapp/components/chat/image_message_bubble.dart';
+import 'package:chatapp/components/chat/map_message_bubble.dart';
 import 'package:chatapp/components/chat/message_bubbles.dart';
 import 'package:chatapp/components/chat/video_message_bubble.dart';
 import 'package:chatapp/components/chat/vm_message_bubbles.dart';
 import 'package:chatapp/pages/navBar/chat/hooks/chat_hooks.dart';
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:waveform_recorder/waveform_recorder.dart';
@@ -31,12 +33,12 @@ class _ConversationPageState extends State<ConversationPage> {
   List<dynamic> messages = [];
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  IO.Socket? socket;
+  io.Socket? socket;
 
   Future<void> _socketConnection() async {
-    socket = IO.io(
+    socket = io.io(
         serverURL,
-        IO.OptionBuilder().setTransports(['websocket']).setQuery({
+        io.OptionBuilder().setTransports(['websocket']).setQuery({
           'userId': Provider.of<UserProvider>(context, listen: false).id
         }).build());
 
@@ -241,6 +243,20 @@ class _ConversationPageState extends State<ConversationPage> {
                       vm: message['message'],
                     );
                   }
+                } else if (message['type'] == "MAP") {
+                  if (message['userId']['_id'] ==
+                      Provider.of<UserProvider>(context).id) {
+                    return LocationSent(
+                      location: message["message"],
+                      messageId: message['_id'],
+                      convoId: widget.conversationId,
+                    );
+                  } else {
+                    return LocationReceived(
+                      profilePic: message['userId']['profilePic'],
+                      location: message['message'],
+                    );
+                  }
                 } else {
                   return const SizedBox();
                 }
@@ -282,12 +298,19 @@ class _ConversationPageState extends State<ConversationPage> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25)),
                       hintText: 'Type a message',
+                      prefixIcon: IconButton(
+                        onPressed: () {
+                          bottomBar();
+                        },
+                        icon: const Icon(CupertinoIcons.plus),
+                        color: Colors.blue,
+                      ),
                       suffixIcon: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             onPressed: _toggleRecording,
-                            icon: const Icon(Icons.mic),
+                            icon: const Icon(CupertinoIcons.mic),
                             color: Colors.blue,
                             iconSize: 24,
                           ),
@@ -316,5 +339,28 @@ class _ConversationPageState extends State<ConversationPage> {
         ],
       ),
     );
+  }
+
+  Future<dynamic> bottomBar() {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return SizedBox(
+              height: 300,
+              child: GridView(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3),
+                children: [
+                  IconButton(
+                      onPressed: () {}, icon: const Icon(Icons.file_open)),
+                  IconButton(
+                      onPressed: () {
+                        ChatHooks()
+                            .sendLocation(context, widget.conversationId);
+                      },
+                      icon: const Icon(Icons.map))
+                ],
+              ));
+        });
   }
 }
