@@ -11,6 +11,8 @@ import 'package:chatapp/utils/env.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:video_player/video_player.dart';
+import 'package:voice_message_package/voice_message_package.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:waveform_recorder/waveform_recorder.dart';
@@ -36,6 +38,7 @@ class _ConversationPageState extends State<ConversationPage> {
   Map<String, dynamic> _replyMessage = {};
   final FocusNode _focusNode = FocusNode();
   io.Socket? socket;
+  late VideoPlayerController _controller;
 
   Future<void> _socketConnection() async {
     socket = io.io(
@@ -162,6 +165,23 @@ class _ConversationPageState extends State<ConversationPage> {
     });
   }
 
+  Future<bool> _selectMessageToReply(Map<String, dynamic> message) async {
+    setState(() {
+      _replyMessage = message;
+    });
+    if (message['type'] == "VIDEO") {
+      _controller = VideoPlayerController.networkUrl(
+          Uri.parse('$serverURL/api/${message['message']}'))
+        ..initialize().then((_) {
+          setState(() {});
+        });
+    }
+
+    await Future.delayed(const Duration(milliseconds: 50));
+    _focusNode.requestFocus();
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -190,32 +210,20 @@ class _ConversationPageState extends State<ConversationPage> {
               controller: _scrollController,
               children: messages.map((message) {
                 if (message['type'] == "MESSAGE") {
-                  Map<String, dynamic>? replyMessage;
-                  if (message['replied'] == true) {
-                    replyMessage = messages.firstWhere(
-                      (replyMessage) =>
-                          replyMessage['_id'] == message['replyId'],
-                      orElse: () => null,
-                    );
-                  }
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
                     return Dismissible(
                       direction: DismissDirection.endToStart,
                       key: UniqueKey(),
                       confirmDismiss: (e) async {
-                        setState(() {
-                          _replyMessage = message;
-                        });
-                        await Future.delayed(const Duration(milliseconds: 50));
-                        _focusNode.requestFocus();
-                        return false;
+                        await _selectMessageToReply(message);
+                        return;
                       },
                       child: MessageSent(
                         convoId: widget.conversationId,
                         messageId: message['_id'],
                         message: message['message'],
-                        replyMessage: replyMessage,
+                        replyMessage: message['replyId'],
                       ),
                     );
                   } else {
@@ -223,74 +231,134 @@ class _ConversationPageState extends State<ConversationPage> {
                       direction: DismissDirection.startToEnd,
                       key: UniqueKey(),
                       confirmDismiss: (e) async {
-                        setState(() {
-                          _replyMessage = message;
-                        });
-                        await Future.delayed(const Duration(milliseconds: 50));
-                        _focusNode.requestFocus();
-                        return false;
+                        await _selectMessageToReply(message);
+                        return;
                       },
                       child: MessageRecieved(
                         profilePic: message['userId']['profilePic'],
                         message: message['message'],
-                        replyMessage: replyMessage,
+                        replyMessage: message['replyId'],
                       ),
                     );
                   }
                 } else if (message['type'] == "IMAGE") {
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
-                    return ImageSent(
-                      messageId: message['_id'],
-                      convoId: widget.conversationId,
-                      image: message['message'],
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: ImageSent(
+                        messageId: message['_id'],
+                        convoId: widget.conversationId,
+                        image: message['message'],
+                      ),
                     );
                   } else {
-                    return ImageReceived(
-                      profilePic: message['userId']['profilePic'],
-                      image: message['message'],
+                    return Dismissible(
+                      direction: DismissDirection.startToEnd,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: ImageReceived(
+                        profilePic: message['userId']['profilePic'],
+                        image: message['message'],
+                      ),
                     );
                   }
                 } else if (message['type'] == "VIDEO") {
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
-                    return VideoSent(
-                      convoId: widget.conversationId,
-                      messageId: message['_id'],
-                      video: message['message'],
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: VideoSent(
+                        convoId: widget.conversationId,
+                        messageId: message['_id'],
+                        video: message['message'],
+                      ),
                     );
                   } else {
-                    return VideoRecieved(
-                      profilePic: message['userId']['profilePic'],
-                      video: message['message'],
+                    return Dismissible(
+                      direction: DismissDirection.startToEnd,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: VideoRecieved(
+                        profilePic: message['userId']['profilePic'],
+                        video: message['message'],
+                      ),
                     );
                   }
                 } else if (message['type'] == "VOICE") {
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
-                    return VMSent(
-                      vm: message["message"],
-                      messageId: message['_id'],
-                      convoId: widget.conversationId,
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: VMSent(
+                        vm: message["message"],
+                        messageId: message['_id'],
+                        convoId: widget.conversationId,
+                      ),
                     );
                   } else {
-                    return VMRecieved(
-                      profilePic: message['userId']['profilePic'],
-                      vm: message['message'],
+                    return Dismissible(
+                      direction: DismissDirection.startToEnd,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: VMRecieved(
+                        profilePic: message['userId']['profilePic'],
+                        vm: message['message'],
+                      ),
                     );
                   }
                 } else if (message['type'] == "MAP") {
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
-                    return LocationSent(
-                      location: message["message"],
-                      messageId: message['_id'],
-                      convoId: widget.conversationId,
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: LocationSent(
+                        location: message["message"],
+                        messageId: message['_id'],
+                        convoId: widget.conversationId,
+                      ),
                     );
                   } else {
-                    return LocationReceived(
-                      profilePic: message['userId']['profilePic'],
-                      location: message['message'],
+                    return Dismissible(
+                      direction: DismissDirection.startToEnd,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: LocationReceived(
+                        profilePic: message['userId']['profilePic'],
+                        location: message['message'],
+                      ),
                     );
                   }
                 } else {
@@ -347,9 +415,84 @@ class _ConversationPageState extends State<ConversationPage> {
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    SizedBox(
-                                      child: Text(_replyMessage['message']),
-                                    ),
+                                    if (_replyMessage['type'] == "MESSAGE")
+                                      SizedBox(
+                                        child: Text(_replyMessage['message']),
+                                      ),
+                                    if (_replyMessage['type'] == "IMAGE")
+                                      SizedBox(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                          child: Image(
+                                            image: NetworkImage(
+                                                '$serverURL/api/${_replyMessage['message']}'),
+                                            fit: BoxFit.cover,
+                                            width: 70,
+                                            height: 70,
+                                          ),
+                                        ),
+                                      ),
+                                    if (_replyMessage['type'] == "VOICE")
+                                      Container(
+                                          constraints: BoxConstraints(
+                                            maxWidth: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.7,
+                                          ),
+                                          child: VoiceMessageView(
+                                            circlesColor: Colors.blue,
+                                            activeSliderColor: Colors.blue,
+                                            controller: VoiceController(
+                                              audioSrc:
+                                                  '$serverURL/api/${_replyMessage['message']}',
+                                              onComplete: () {
+                                                /// do something on complete
+                                              },
+                                              onPause: () {
+                                                /// do something on pause
+                                              },
+                                              onPlaying: () {
+                                                /// do something on playing
+                                              },
+                                              onError: (err) {
+                                                /// do somethin on error
+                                              },
+                                              maxDuration:
+                                                  const Duration(seconds: 5000),
+                                              isFile: false,
+                                            ),
+                                            innerPadding: 12,
+                                            cornerRadius: 20,
+                                          )),
+                                    if (_replyMessage['type'] == "MAP")
+                                      const SizedBox(
+                                        child: Row(children: [
+                                          Icon(Icons.map),
+                                          Text("Map Location")
+                                        ]),
+                                      ),
+                                    if (_replyMessage['type'] == "VIDEO")
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(25),
+                                        child: SizedBox(
+                                          width: 70,
+                                          height: 70,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              VideoPlayer(_controller),
+                                              Icon(
+                                                Icons.play_circle_outline,
+                                                size: 50,
+                                                color:
+                                                    Colors.white.withValues(),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                                 IconButton(

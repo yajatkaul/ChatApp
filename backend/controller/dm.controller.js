@@ -64,7 +64,13 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    const populatedMessage = await newMessage.populate("userId");
+    const populatedMessage = await newMessage.populate([
+      { path: "userId" },
+      {
+        path: "replyId",
+        populate: { path: "userId" },
+      },
+    ]);
 
     const memberIds = [
       ...new Set(conversation.members.map((memberId) => memberId.toString())),
@@ -215,7 +221,13 @@ export const sendVM = async (req, res) => {
 export const getMessage = async (req, res) => {
   try {
     const { conversationId } = req.query;
-    const messages = await Message.find({ conversationId }).populate("userId");
+    const messages = await Message.find({ conversationId }).populate([
+      { path: "userId" },
+      {
+        path: "replyId",
+        populate: { path: "userId" },
+      },
+    ]);
 
     res.status(200).json(messages);
   } catch (err) {

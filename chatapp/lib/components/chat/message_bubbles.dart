@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:video_player/video_player.dart';
+import 'package:voice_message_package/voice_message_package.dart';
 
 Widget _getAlertMine(
     BuildContext context, String message, String messageId, String convoId) {
@@ -55,6 +57,88 @@ class MessageSent extends StatelessWidget {
       required this.convoId,
       this.replyMessage});
 
+  Widget _replyTypeResponse(BuildContext context) {
+    switch (replyMessage!['type']) {
+      case "MESSAGE":
+        return Text(replyMessage!['message']);
+      case "IMAGE":
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.6,
+            ),
+            child: Image.network(
+              '$serverURL/api/${replyMessage!['message']}',
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+      case "VIDEO":
+        late VideoPlayerController controller;
+        controller = VideoPlayerController.networkUrl(
+            Uri.parse('$serverURL/api/${replyMessage!['message']}'))
+          ..initialize().then((_) {});
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: SizedBox(
+            width: 70,
+            height: 70,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                VideoPlayer(controller),
+                Icon(
+                  Icons.play_circle_outline,
+                  size: 50,
+                  color: Colors.white.withValues(),
+                ),
+              ],
+            ),
+          ),
+        );
+      case "VOICE":
+        return Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7,
+            ),
+            child: VoiceMessageView(
+              circlesColor: Colors.blue,
+              activeSliderColor: Colors.blue,
+              controller: VoiceController(
+                audioSrc: '$serverURL/api/${replyMessage!['message']}',
+                onComplete: () {
+                  /// do something on complete
+                },
+                onPause: () {
+                  /// do something on pause
+                },
+                onPlaying: () {
+                  /// do something on playing
+                },
+                onError: (err) {
+                  /// do somethin on error
+                },
+                maxDuration: const Duration(seconds: 5000),
+                isFile: false,
+              ),
+              innerPadding: 12,
+              cornerRadius: 20,
+            ));
+      case "MAP":
+        return Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
+          ),
+          child: Row(
+            children: [const Icon(Icons.map), Text(replyMessage!['message'])],
+          ),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Regular expression to find links in the message
@@ -93,13 +177,17 @@ class MessageSent extends StatelessWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(5),
                           child: Container(
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.7,
+                              ),
                               decoration: const BoxDecoration(
                                   color: Colors.white,
                                   border: BorderDirectional(
                                       end: BorderSide(color: Colors.grey))),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(replyMessage!['message']),
+                                child: _replyTypeResponse(context),
                               )),
                         ),
                       ],
@@ -224,6 +312,88 @@ class MessageRecieved extends StatelessWidget {
       required this.profilePic,
       this.replyMessage});
 
+  Widget _replyTypeResponse(BuildContext context) {
+    switch (replyMessage!['type']) {
+      case "MESSAGE":
+        return Text(replyMessage!['message']);
+      case "IMAGE":
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.6,
+            ),
+            child: Image.network(
+              '$serverURL/api/${replyMessage!['message']}',
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+      case "VIDEO":
+        late VideoPlayerController controller;
+        controller = VideoPlayerController.networkUrl(
+            Uri.parse('$serverURL/api/${replyMessage!['message']}'))
+          ..initialize().then((_) {});
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: SizedBox(
+            width: 70,
+            height: 70,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                VideoPlayer(controller),
+                Icon(
+                  Icons.play_circle_outline,
+                  size: 50,
+                  color: Colors.white.withValues(),
+                ),
+              ],
+            ),
+          ),
+        );
+      case "VOICE":
+        return Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7,
+            ),
+            child: VoiceMessageView(
+              circlesColor: Colors.blue,
+              activeSliderColor: Colors.blue,
+              controller: VoiceController(
+                audioSrc: '$serverURL/api/${replyMessage!['message']}',
+                onComplete: () {
+                  /// do something on complete
+                },
+                onPause: () {
+                  /// do something on pause
+                },
+                onPlaying: () {
+                  /// do something on playing
+                },
+                onError: (err) {
+                  /// do somethin on error
+                },
+                maxDuration: const Duration(seconds: 5000),
+                isFile: false,
+              ),
+              innerPadding: 12,
+              cornerRadius: 20,
+            ));
+      case "MAP":
+        return Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
+          ),
+          child: Row(
+            children: [const Icon(Icons.map), Text(replyMessage!['message'])],
+          ),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Regular expression to find links in the message
@@ -281,7 +451,7 @@ class MessageRecieved extends StatelessWidget {
                                       start: BorderSide(color: Colors.grey))),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(replyMessage!['message']),
+                                child: _replyTypeResponse(context),
                               )),
                         ),
                       ],
