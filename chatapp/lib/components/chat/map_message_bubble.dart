@@ -41,7 +41,7 @@ class LocationSent extends StatelessWidget {
               margin: const EdgeInsets.only(top: 20),
               backGroundColor: Colors.blue,
               child: SizedBox(
-                width: 300,
+                width: MediaQuery.of(context).size.width * 0.7,
                 height: 200,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(25),
@@ -97,7 +97,6 @@ class LocationSent extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(100),
             child: SizedBox(
@@ -154,13 +153,12 @@ class LocationReceived extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 10),
           ChatBubble(
             clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
             backGroundColor: const Color(0xffE7E7ED),
             margin: const EdgeInsets.only(top: 20),
             child: SizedBox(
-              width: 300,
+              width: MediaQuery.of(context).size.width * 0.7,
               height: 200,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(25),
