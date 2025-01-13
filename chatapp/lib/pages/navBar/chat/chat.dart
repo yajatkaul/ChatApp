@@ -33,6 +33,8 @@ class _ConversationPageState extends State<ConversationPage> {
   List<dynamic> messages = [];
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
+  Map<String, dynamic> _replyMessage = {};
+  final FocusNode _focusNode = FocusNode();
   io.Socket? socket;
 
   Future<void> _socketConnection() async {
@@ -188,17 +190,51 @@ class _ConversationPageState extends State<ConversationPage> {
               controller: _scrollController,
               children: messages.map((message) {
                 if (message['type'] == "MESSAGE") {
+                  Map<String, dynamic>? replyMessage;
+                  if (message['replied'] == true) {
+                    replyMessage = messages.firstWhere(
+                      (replyMessage) =>
+                          replyMessage['_id'] == message['replyId'],
+                      orElse: () => null,
+                    );
+                  }
                   if (message['userId']['_id'] ==
                       Provider.of<UserProvider>(context).id) {
-                    return MessageSent(
-                      convoId: widget.conversationId,
-                      messageId: message['_id'],
-                      message: message['message'],
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        setState(() {
+                          _replyMessage = message;
+                        });
+                        await Future.delayed(const Duration(milliseconds: 50));
+                        _focusNode.requestFocus();
+                        return false;
+                      },
+                      child: MessageSent(
+                        convoId: widget.conversationId,
+                        messageId: message['_id'],
+                        message: message['message'],
+                        replyMessage: replyMessage,
+                      ),
                     );
                   } else {
-                    return MessageRecieved(
-                      profilePic: message['userId']['profilePic'],
-                      message: message['message'],
+                    return Dismissible(
+                      direction: DismissDirection.startToEnd,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        setState(() {
+                          _replyMessage = message;
+                        });
+                        await Future.delayed(const Duration(milliseconds: 50));
+                        _focusNode.requestFocus();
+                        return false;
+                      },
+                      child: MessageRecieved(
+                        profilePic: message['userId']['profilePic'],
+                        message: message['message'],
+                        replyMessage: replyMessage,
+                      ),
                     );
                   }
                 } else if (message['type'] == "IMAGE") {
@@ -263,78 +299,126 @@ class _ConversationPageState extends State<ConversationPage> {
               }).toList(),
             ),
           )),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8, left: 4, right: 8),
-            child: _waveController.isRecording
-                ? Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(25)),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.65,
-                          height: 52,
-                          child: WaveformRecorder(
-                            height: 48,
-                            controller: _waveController,
-                            onRecordingStopped: _onRecordingStopped,
-                          ),
-                        ),
-                        IconButton(
-                            onPressed: _onRecodingCanceled,
-                            icon: const Icon(Icons.delete)),
-                        IconButton(
-                            onPressed: _toggleRecording,
-                            icon: const Icon(Icons.send_rounded)),
-                      ],
-                    ),
-                  )
-                : TextField(
-                    minLines: 1,
-                    maxLines: 5,
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
+          Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 8, left: 4, right: 8),
+              child: _waveController.isRecording
+                  ? Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.circular(25)),
-                      hintText: 'Type a message',
-                      prefixIcon: IconButton(
-                        onPressed: () {
-                          bottomBar();
-                        },
-                        icon: const Icon(CupertinoIcons.plus),
-                        color: Colors.blue,
-                      ),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
+                      child: Row(
                         children: [
-                          IconButton(
-                            onPressed: _toggleRecording,
-                            icon: const Icon(CupertinoIcons.mic),
-                            color: Colors.blue,
-                            iconSize: 24,
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.65,
+                            height: 52,
+                            child: WaveformRecorder(
+                              height: 48,
+                              controller: _waveController,
+                              onRecordingStopped: _onRecordingStopped,
+                            ),
                           ),
                           IconButton(
-                            onPressed: _sendAsset,
-                            icon: const Icon(Icons.image_rounded),
-                            color: Colors.blue,
-                            iconSize: 24,
-                          ),
+                              onPressed: _onRecodingCanceled,
+                              icon: const Icon(Icons.delete)),
                           IconButton(
-                            onPressed: () {
-                              if (_messageController.text == "") {
-                                return;
-                              }
-                              ChatHooks().sendMessages(context,
-                                  widget.conversationId, _messageController);
-                            },
-                            icon: const Icon(Icons.send_rounded),
-                            color: Colors.blue,
-                          ),
+                              onPressed: _toggleRecording,
+                              icon: const Icon(Icons.send_rounded)),
                         ],
                       ),
+                    )
+                  : Column(
+                      children: [
+                        if (_replyMessage.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Replying to ${_replyMessage["userId"]['displayName']}",
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(
+                                      child: Text(_replyMessage['message']),
+                                    ),
+                                  ],
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _replyMessage = {};
+                                      });
+                                    },
+                                    icon: const Icon(Icons.close))
+                              ],
+                            ),
+                          ),
+                        TextField(
+                          minLines: 1,
+                          maxLines: 5,
+                          controller: _messageController,
+                          focusNode: _focusNode,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25)),
+                            hintText: 'Type a message',
+                            prefixIcon: IconButton(
+                              onPressed: () {
+                                bottomBar();
+                              },
+                              icon: const Icon(CupertinoIcons.plus),
+                              color: Colors.blue,
+                            ),
+                            suffixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: _toggleRecording,
+                                  icon: const Icon(CupertinoIcons.mic),
+                                  color: Colors.blue,
+                                  iconSize: 24,
+                                ),
+                                IconButton(
+                                  onPressed: _sendAsset,
+                                  icon: const Icon(Icons.image_rounded),
+                                  color: Colors.blue,
+                                  iconSize: 24,
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    if (_messageController.text == "") {
+                                      return;
+                                    }
+                                    ChatHooks().sendMessages(
+                                        context,
+                                        widget.conversationId,
+                                        _messageController,
+                                        _replyMessage['_id']);
+                                    if (_replyMessage.isNotEmpty) {
+                                      setState(() {
+                                        _replyMessage = {};
+                                      });
+                                    }
+                                  },
+                                  icon: const Icon(Icons.send_rounded),
+                                  color: Colors.blue,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+            ),
           )
         ],
       ),

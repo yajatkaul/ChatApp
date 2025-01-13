@@ -34,7 +34,7 @@ class ChatHooks {
   }
 
   Future<void> sendMessages(BuildContext context, String convoId,
-      TextEditingController messageController) async {
+      TextEditingController messageController, String? replyId) async {
     final response = await http.post(
         Uri.parse('$serverURL/api/dm/sendMessage?conversationId=$convoId'),
         headers: <String, String>{
@@ -42,7 +42,8 @@ class ChatHooks {
           'Cookie':
               Provider.of<UserProvider>(context, listen: false).sessionCookie!,
         },
-        body: jsonEncode({"message": messageController.text}));
+        body: jsonEncode(
+            {"message": messageController.text, "replyId": replyId}));
 
     if (response.statusCode == 200) {
       messageController.text = '';

@@ -47,11 +47,13 @@ class MessageSent extends StatelessWidget {
   final String convoId;
   final String messageId;
   final String message;
+  final Map<String, dynamic>? replyMessage;
   const MessageSent(
       {super.key,
       required this.message,
       required this.messageId,
-      required this.convoId});
+      required this.convoId,
+      this.replyMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -60,103 +62,12 @@ class MessageSent extends StatelessWidget {
       r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
     );
     final String? link = linkRegExp.firstMatch(message)?.group(0);
-    if (link != null) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onLongPress: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return _getAlertMine(context, message, messageId, convoId);
-                  },
-                );
-              },
-              child: ChatBubble(
-                clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
-                alignment: Alignment.topRight,
-                margin: const EdgeInsets.only(top: 20),
-                backGroundColor: Colors.blue,
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.7,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (AnyLinkPreview.isValidLink(link))
-                            AnyLinkPreview(
-                              link: link,
-                              displayDirection: UIDirection.uiDirectionVertical,
-                              showMultimedia: true,
-                              bodyMaxLines: 5,
-                              bodyTextOverflow: TextOverflow.ellipsis,
-                              titleStyle: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                              bodyStyle: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                              errorBody: 'Could not load preview',
-                              errorTitle: 'Error',
-                              errorWidget: Container(
-                                color: Colors.grey[300],
-                                child: const Text('Oops!'),
-                              ),
-                              cache: const Duration(days: 7),
-                              backgroundColor: Colors.grey[300],
-                              borderRadius: 12,
-                              removeElevation: false,
-                              onTap: () => launchUrl(Uri.parse(link)),
-                            ),
-                          MarkdownBody(
-                            data: message,
-                            onTapLink: (text, href, title) =>
-                                launchUrl(Uri.parse(href!)),
-                            styleSheet: MarkdownStyleSheet(
-                                p: const TextStyle(color: Colors.white),
-                                a: const TextStyle(
-                                    color: Color.fromARGB(255, 179, 202, 243))),
-                            builders: {
-                              "code": CodeBuilder(context),
-                            },
-                          ),
-                        ]),
-                  ),
-                ),
-              ),
-            ),
-            ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: SizedBox(
-                  height: 40,
-                  width: 40,
-                  child: Image.network(
-                    Provider.of<UserProvider>(context).profilePic == null
-                        ? defaultImage
-                        : Provider.of<UserProvider>(context).profilePic!,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                  ),
-                )),
-          ],
-        ),
-      );
-    } else {
-      return Row(
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           GestureDetector(
             behavior: HitTestBehavior.translucent,
@@ -168,31 +79,94 @@ class MessageSent extends StatelessWidget {
                 },
               );
             },
-            child: ChatBubble(
-              clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
-              alignment: Alignment.topRight,
-              margin: const EdgeInsets.only(top: 20),
-              backGroundColor: Colors.blue,
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.7,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: MarkdownBody(
-                    data: message,
-                    onTapLink: (text, href, title) =>
-                        launchUrl(Uri.parse(href!)),
-                    styleSheet: MarkdownStyleSheet(
-                        p: const TextStyle(color: Colors.white),
-                        a: const TextStyle(
-                            color: Color.fromARGB(255, 179, 202, 243))),
-                    builders: {
-                      "code": CodeBuilder(context),
-                    },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (replyMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                            "replied to ${replyMessage!['userId']['displayName']}"),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Container(
+                              decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  border: BorderDirectional(
+                                      end: BorderSide(color: Colors.grey))),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(replyMessage!['message']),
+                              )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ChatBubble(
+                  clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
+                  alignment: Alignment.topRight,
+                  margin: const EdgeInsets.only(top: 10),
+                  backGroundColor: Colors.blue,
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.7,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (link != null &&
+                                AnyLinkPreview.isValidLink(link))
+                              AnyLinkPreview(
+                                link: link,
+                                displayDirection:
+                                    UIDirection.uiDirectionVertical,
+                                showMultimedia: true,
+                                bodyMaxLines: 5,
+                                bodyTextOverflow: TextOverflow.ellipsis,
+                                titleStyle: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                                bodyStyle: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                                errorBody: 'Could not load preview',
+                                errorTitle: 'Error',
+                                errorWidget: Container(
+                                  color: Colors.grey[300],
+                                  child: const Text('Oops!'),
+                                ),
+                                cache: const Duration(days: 7),
+                                backgroundColor: Colors.grey[300],
+                                borderRadius: 12,
+                                removeElevation: false,
+                                onTap: () => launchUrl(Uri.parse(link)),
+                              ),
+                            MarkdownBody(
+                              data: message,
+                              onTapLink: (text, href, title) =>
+                                  launchUrl(Uri.parse(href!)),
+                              styleSheet: MarkdownStyleSheet(
+                                  p: const TextStyle(color: Colors.white),
+                                  a: const TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 179, 202, 243))),
+                              builders: {
+                                "code": CodeBuilder(context),
+                              },
+                            ),
+                          ]),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
           ClipRRect(
@@ -210,8 +184,8 @@ class MessageSent extends StatelessWidget {
                 ),
               )),
         ],
-      );
-    }
+      ),
+    );
   }
 }
 
@@ -243,8 +217,12 @@ Widget _getAlertOther(BuildContext context, String message) {
 class MessageRecieved extends StatelessWidget {
   final String message;
   final String? profilePic;
+  final Map<String, dynamic>? replyMessage;
   const MessageRecieved(
-      {super.key, required this.message, required this.profilePic});
+      {super.key,
+      required this.message,
+      required this.profilePic,
+      this.replyMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -254,100 +232,11 @@ class MessageRecieved extends StatelessWidget {
     );
     final String? link = linkRegExp.firstMatch(message)?.group(0);
 
-    if (link != null) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: SizedBox(
-                  height: 40,
-                  width: 40,
-                  child: Image.network(
-                    profilePic == null
-                        ? defaultImage
-                        : '$serverURL/api/$profilePic',
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                  ),
-                )),
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onLongPress: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return _getAlertOther(context, message);
-                    });
-              },
-              child: ChatBubble(
-                clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
-                backGroundColor: const Color(0xffE7E7ED),
-                margin: const EdgeInsets.only(top: 20),
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.7,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (AnyLinkPreview.isValidLink(link))
-                          AnyLinkPreview(
-                            link: link,
-                            displayDirection: UIDirection.uiDirectionVertical,
-                            showMultimedia: true,
-                            bodyMaxLines: 5,
-                            bodyTextOverflow: TextOverflow.ellipsis,
-                            titleStyle: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                            bodyStyle: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                            ),
-                            errorBody: 'Could not load preview',
-                            errorTitle: 'Error',
-                            errorWidget: Container(
-                              color: Colors.grey[300],
-                              child: const Text('Oops!'),
-                            ),
-                            cache: const Duration(days: 7),
-                            backgroundColor: Colors.grey[300],
-                            borderRadius: 12,
-                            removeElevation: false,
-                            onTap: () => launchUrl(Uri.parse(link)),
-                          ),
-                        MarkdownBody(
-                          data: message,
-                          builders: {
-                            "code": CodeBuilder(context),
-                          },
-                          onTapLink: (text, href, title) =>
-                              launchUrl(Uri.parse(href!)),
-                          styleSheet: MarkdownStyleSheet(
-                              a: const TextStyle(color: Colors.blue)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Row(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ClipRRect(
               borderRadius: BorderRadius.circular(100),
@@ -372,32 +261,94 @@ class MessageRecieved extends StatelessWidget {
                     return _getAlertOther(context, message);
                   });
             },
-            child: ChatBubble(
-              clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
-              backGroundColor: const Color(0xffE7E7ED),
-              margin: const EdgeInsets.only(top: 20),
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.7,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: MarkdownBody(
-                    data: message,
-                    builders: {
-                      "code": CodeBuilder(context),
-                    },
-                    styleSheet: MarkdownStyleSheet(
-                        a: const TextStyle(
-                            color: Color.fromARGB(255, 179, 202, 243))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (replyMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            "replied to ${replyMessage!['userId']['displayName']}"),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Container(
+                              decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  border: BorderDirectional(
+                                      start: BorderSide(color: Colors.grey))),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(replyMessage!['message']),
+                              )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ChatBubble(
+                  clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
+                  backGroundColor: const Color(0xffE7E7ED),
+                  margin: const EdgeInsets.only(top: 10),
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.7,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (link != null && AnyLinkPreview.isValidLink(link))
+                            AnyLinkPreview(
+                              link: link,
+                              displayDirection: UIDirection.uiDirectionVertical,
+                              showMultimedia: true,
+                              bodyMaxLines: 5,
+                              bodyTextOverflow: TextOverflow.ellipsis,
+                              titleStyle: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                              bodyStyle: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                              errorBody: 'Could not load preview',
+                              errorTitle: 'Error',
+                              errorWidget: Container(
+                                color: Colors.grey[300],
+                                child: const Text('Oops!'),
+                              ),
+                              cache: const Duration(days: 7),
+                              backgroundColor: Colors.grey[300],
+                              borderRadius: 12,
+                              removeElevation: false,
+                              onTap: () => launchUrl(Uri.parse(link)),
+                            ),
+                          MarkdownBody(
+                            data: message,
+                            builders: {
+                              "code": CodeBuilder(context),
+                            },
+                            onTapLink: (text, href, title) =>
+                                launchUrl(Uri.parse(href!)),
+                            styleSheet: MarkdownStyleSheet(
+                                a: const TextStyle(color: Colors.blue)),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
-      );
-    }
+      ),
+    );
   }
 }
 

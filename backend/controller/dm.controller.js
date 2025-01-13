@@ -46,7 +46,7 @@ export const getConversations = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, replyId } = req.body;
     const { conversationId } = req.query;
 
     const conversation = await Conversation.findById(conversationId);
@@ -56,6 +56,11 @@ export const sendMessage = async (req, res) => {
       userId: req.session.userId,
       message,
     });
+
+    if (replyId) {
+      newMessage.replied = true;
+      newMessage.replyId = replyId;
+    }
 
     await newMessage.save();
 

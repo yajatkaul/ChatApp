@@ -22,6 +22,14 @@ const messageSchema = new mongoose.Schema(
       enum: ["MESSAGE", "VOICE", "IMAGE", "VIDEO", "FILE", "MAP"],
       default: "MESSAGE",
     },
+    replied: {
+      type: Boolean,
+      default: false,
+    },
+    replyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+    },
   },
   { timestamps: true }
 );
