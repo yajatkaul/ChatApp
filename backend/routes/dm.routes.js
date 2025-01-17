@@ -6,6 +6,7 @@ import {
   getMessage,
   getUsersForNewMessage,
   sendAsset,
+  sendFiles,
   sendLocation,
   sendMessage,
   sendVM,
@@ -21,6 +22,7 @@ router.get("/getConversations", getConversations);
 router.post("/sendMessage", sendMessage);
 router.post("/sendLocation", sendLocation);
 router.post("/sendAsset", upload.array("assets", 20), sendAsset);
+router.post("/sendFiles", upload.array("files", 20), sendFiles);
 router.post("/sendVM", upload.single("vm"), sendVM);
 
 router.get("/deleteMessage", deleteMessage);

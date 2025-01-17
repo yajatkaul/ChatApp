@@ -181,6 +181,50 @@ export const sendAsset = async (req, res) => {
   }
 };
 
+export const sendFiles = async (req, res) => {
+  try {
+    const files = req.files;
+    const { conversationId } = req.query;
+
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found" });
+    }
+
+    const promises = files.map((file) => {
+      const newMessage = new Message({
+        conversationId,
+        userId: req.session.userId,
+        type: "FILE",
+        message: file.path,
+      });
+
+      return newMessage
+        .save()
+        .then((savedMessage) => savedMessage.populate("userId"));
+    });
+
+    const populatedMessages = await Promise.all(promises);
+
+    const memberIds = [
+      ...new Set(conversation.members.map((memberId) => memberId.toString())),
+    ];
+    memberIds.forEach((memberId) => {
+      const memberSocketId = userSocketMap[memberId.toString()];
+      if (memberSocketId) {
+        populatedMessages.forEach((message) => {
+          io.to(memberSocketId).emit("newMessage", message);
+        });
+      }
+    });
+
+    res.status(200).json({ result: "Success" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const sendVM = async (req, res) => {
   try {
     const vm = req.file;

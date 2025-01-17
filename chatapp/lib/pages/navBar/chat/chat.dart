@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chatapp/components/chat/file_message_bubble.dart';
 import 'package:chatapp/components/chat/image_message_bubble.dart';
 import 'package:chatapp/components/chat/map_message_bubble.dart';
 import 'package:chatapp/components/chat/message_bubbles.dart';
@@ -10,6 +11,7 @@ import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_download_manager/flutter_download_manager.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:video_player/video_player.dart';
 import 'package:voice_message_package/voice_message_package.dart';
@@ -361,6 +363,36 @@ class _ConversationPageState extends State<ConversationPage> {
                       ),
                     );
                   }
+                } else if (message['type'] == "FILE") {
+                  if (message['userId']['_id'] ==
+                      Provider.of<UserProvider>(context).id) {
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: FileSent(
+                        file: message["message"],
+                        messageId: message['_id'],
+                        convoId: widget.conversationId,
+                      ),
+                    );
+                  } else {
+                    return Dismissible(
+                      direction: DismissDirection.startToEnd,
+                      key: UniqueKey(),
+                      confirmDismiss: (e) async {
+                        await _selectMessageToReply(message);
+                        return;
+                      },
+                      child: FileReceived(
+                        messageId: message['_id'],
+                        file: message['message'],
+                      ),
+                    );
+                  }
                 } else {
                   return const SizedBox();
                 }
@@ -493,6 +525,24 @@ class _ConversationPageState extends State<ConversationPage> {
                                           ),
                                         ),
                                       ),
+                                    if (_replyMessage['type'] == "FILE")
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(25),
+                                        child: SizedBox(
+                                          height: 70,
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.file_download,
+                                                size: 20,
+                                              ),
+                                              Text(DownloadManager()
+                                                  .getFileNameFromUrl(
+                                                      '$serverURL/api/${_replyMessage['message']}')),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                                 IconButton(
@@ -579,7 +629,10 @@ class _ConversationPageState extends State<ConversationPage> {
                     crossAxisCount: 3),
                 children: [
                   IconButton(
-                      onPressed: () {}, icon: const Icon(Icons.file_open)),
+                      onPressed: () {
+                        ChatHooks().sendFiles(context, widget.conversationId);
+                      },
+                      icon: const Icon(Icons.file_open)),
                   IconButton(
                       onPressed: () {
                         ChatHooks()

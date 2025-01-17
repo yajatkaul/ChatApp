@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:chatapp/providers/user_provider.dart';
 import 'package:chatapp/utils/env.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -161,6 +162,46 @@ class ChatHooks {
 
     if (response.statusCode == 200) {
       Navigator.pop(context);
+    }
+  }
+
+  Future<void> sendFiles(BuildContext context, String convoId) async {
+    try {
+      final Uri url =
+          Uri.parse('$serverURL/api/dm/sendFiles?conversationId=$convoId');
+
+      var request = http.MultipartRequest('POST', url);
+
+      request.headers['Cookie'] =
+          Provider.of<UserProvider>(context, listen: false).sessionCookie!;
+
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+      );
+
+      if (result != null) {
+        List<File> files = result.paths.map((path) => File(path!)).toList();
+
+        for (var fileRaw in files) {
+          var mimeTypeData = lookupMimeType(fileRaw.path);
+          var type = mimeTypeData!.split("/");
+
+          var value = await http.MultipartFile.fromPath('files', fileRaw.path,
+              filename: path.basename(fileRaw.path),
+              contentType: MediaType(type[0], type[1]));
+          request.files.add(value);
+        }
+
+        final response = await request.send();
+
+        if (response.statusCode == 200) {
+          Navigator.pop(context);
+        }
+      } else {
+        return;
+      }
+    } catch (e) {
+      debugPrint('Error occurred while uploading assets: $e');
     }
   }
 }
