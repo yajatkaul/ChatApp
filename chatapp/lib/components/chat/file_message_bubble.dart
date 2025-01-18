@@ -87,9 +87,6 @@ class FileSent extends StatelessWidget {
                   )),
             ),
           ),
-          const SizedBox(
-            width: 10,
-          ),
           ClipRRect(
               borderRadius: BorderRadius.circular(100),
               child: SizedBox(
@@ -123,6 +120,20 @@ class FileReceived extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: SizedBox(
+                height: 40,
+                width: 40,
+                child: Image.network(
+                  Provider.of<UserProvider>(context).profilePic == null
+                      ? defaultImage
+                      : Provider.of<UserProvider>(context).profilePic!,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              )),
           GestureDetector(
             onLongPress: () {
               showDialog(
@@ -131,7 +142,7 @@ class FileReceived extends StatelessWidget {
                   return AlertDialog(
                     title: const Text("Message Options"),
                     content: SizedBox(
-                      height: 100,
+                      height: 50,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -178,23 +189,6 @@ class FileReceived extends StatelessWidget {
                   )),
             ),
           ),
-          const SizedBox(
-            width: 10,
-          ),
-          ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: SizedBox(
-                height: 40,
-                width: 40,
-                child: Image.network(
-                  Provider.of<UserProvider>(context).profilePic == null
-                      ? defaultImage
-                      : Provider.of<UserProvider>(context).profilePic!,
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.cover,
-                ),
-              )),
         ],
       ),
     );

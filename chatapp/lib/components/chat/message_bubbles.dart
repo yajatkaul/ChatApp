@@ -5,6 +5,7 @@ import 'package:chatapp/utils/env.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_download_manager/flutter_download_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -132,6 +133,19 @@ class MessageSent extends StatelessWidget {
           ),
           child: Row(
             children: [const Icon(Icons.map), Text(replyMessage!['message'])],
+          ),
+        );
+      case "FILE":
+        return Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.file_open),
+              Text(DownloadManager().getFileNameFromUrl(
+                  '$serverURL/api/${replyMessage!['message']}'))
+            ],
           ),
         );
       default:
@@ -387,6 +401,19 @@ class MessageRecieved extends StatelessWidget {
           ),
           child: Row(
             children: [const Icon(Icons.map), Text(replyMessage!['message'])],
+          ),
+        );
+      case "FILE":
+        return Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.file_open),
+              Text(DownloadManager().getFileNameFromUrl(
+                  '$serverURL/api/${replyMessage!['message']}'))
+            ],
           ),
         );
       default:

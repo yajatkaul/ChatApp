@@ -624,22 +624,42 @@ class _ConversationPageState extends State<ConversationPage> {
         builder: (context) {
           return SizedBox(
               height: 300,
-              child: GridView(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3),
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        ChatHooks().sendFiles(context, widget.conversationId);
-                      },
-                      icon: const Icon(Icons.file_open)),
-                  IconButton(
-                      onPressed: () {
-                        ChatHooks()
-                            .sendLocation(context, widget.conversationId);
-                      },
-                      icon: const Icon(Icons.map))
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(25),
+                child: GridView(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3, crossAxisSpacing: 10),
+                  children: [
+                    ClipOval(
+                      child: Container(
+                        color: Colors.blue,
+                        child: IconButton(
+                            onPressed: () {
+                              ChatHooks()
+                                  .sendFiles(context, widget.conversationId);
+                            },
+                            icon: const Icon(
+                              Icons.file_open,
+                              size: 50,
+                            )),
+                      ),
+                    ),
+                    ClipOval(
+                      child: Container(
+                        color: Colors.green,
+                        child: IconButton(
+                            onPressed: () {
+                              ChatHooks()
+                                  .sendLocation(context, widget.conversationId);
+                            },
+                            icon: const Icon(
+                              Icons.map,
+                              size: 50,
+                            )),
+                      ),
+                    )
+                  ],
+                ),
               ));
         });
   }
